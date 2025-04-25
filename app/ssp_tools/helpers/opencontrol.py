@@ -9,7 +9,7 @@ from typing import Any, Dict, List, Optional, Set
 
 import rtyaml
 from blinker import signal
-from pydantic import BaseModel, PrivateAttr, ValidationError
+from pydantic import BaseModel, Field, PrivateAttr, ValidationError
 from slugify import slugify
 
 OPENCONTROL_SCHEMA_VERSION = "1.0.0"
@@ -58,19 +58,19 @@ class ImplementationStatusEnum(str, Enum):
 
 class CoveredBy(OpenControlElement):
     verification_key: str
-    system_key: Optional[str]
-    component_key: Optional[str]
+    system_key: Optional[str] = Field(default=None)
+    component_key: Optional[str] = Field(default=None)
 
 
 class Control(OpenControlElement):
     control_key: str
     standard_key: str
-    covered_by: Optional[List[CoveredBy]]
-    narrative: Optional[List[Statement]]
-    references: Optional[List[Reference]]
+    covered_by: Optional[List[CoveredBy]] = Field(default=[])
+    narrative: Optional[List[Statement]] = Field(default=[])
+    references: Optional[List[Reference]] = Field(default=[])
     implementation_statuses: Optional[Set[ImplementationStatusEnum]]
-    control_origins: Optional[List[str]]  # TODO (enum)
-    parameters: Optional[List[Parameter]]
+    control_origins: Optional[List[str]] = Field(default=[])
+    parameters: Optional[List[Parameter]] = Field(default=[])
     _file: str = PrivateAttr()
 
 
@@ -83,22 +83,22 @@ class Verification(OpenControlElement):
     key: str
     name: str
     type: str
-    path: Optional[str]
-    description: Optional[str]
-    test_passed: Optional[bool]
+    path: Optional[str] = Field(default=None)
+    description: Optional[str] = Field(default=None)
+    test_passed: Optional[bool] = Field(default=None)
     last_run: Any  # optional (because of Any)
 
 
 class Component(OpenControlElement):
     schema_version: str = COMPONENT_SCHEMA_VERSION
     name: str
-    key: Optional[str]
-    system: Optional[str]
-    documentation_complete: Optional[bool]
-    responsible_role: Optional[str]
-    references: Optional[List[Reference]]
-    verifications: Optional[List[Verification]]
-    satisfies: Optional[List[Control]]
+    key: Optional[str] = Field(default=None)
+    system: Optional[str] = Field(default=None)
+    documentation_complete: Optional[bool] = Field(default=None)
+    responsible_role: Optional[str] = Field(default=None)
+    references: Optional[List[Reference]] = Field(default=[])
+    verifications: Optional[List[Verification]] = Field(default=[])
+    satisfies: Optional[List[Control]] = Field(default=[])
 
     _file: str = PrivateAttr()
 
@@ -114,8 +114,8 @@ class StandardControl(OpenControlElement):
 
 class Standard(OpenControlElement):
     name: str
-    license: Optional[str]
-    source: Optional[str]
+    license: Optional[str] = Field(default=None)
+    source: Optional[str] = Field(default=None)
     controls: Dict[str, StandardControl]
     _file: str = PrivateAttr()
 
@@ -145,13 +145,13 @@ class System(OpenControlElement):
 class Dependency(OpenControlElement):
     url: str
     revision: str
-    contextdir: Optional[str]
+    contextdir: Optional[str] = Field(default=None)
 
 
 class Dependencies(OpenControlElement):
-    certifications: Optional[List[Dependency]] = []
-    standards: Optional[List[Dependency]] = []
-    systems: Optional[List[Dependency]] = []
+    certifications: Optional[List[Dependency]] = Field(default=[])
+    standards: Optional[List[Dependency]] = Field(default=None)
+    systems: Optional[List[Dependency]] = Field(default=None)
 
 
 class OpenControl(OpenControlElement):
@@ -162,10 +162,10 @@ class OpenControl(OpenControlElement):
     schema_version: str = OPENCONTROL_SCHEMA_VERSION
     name: str
     metadata: Optional[Metadata]
-    components: List[str]
-    standards: List[str]
-    certifications: List[str]
-    dependencies: Optional[Dependencies]
+    components: List[str] = Field(default=None)
+    standards: List[str] = Field(default=None)
+    certifications: List[str] = Field(default=None)
+    dependencies: Optional[Dependencies] = Field(default=None)
 
     _root_dir: str = PrivateAttr()
 
@@ -183,13 +183,13 @@ class OpenControl(OpenControlElement):
         )
 
     @classmethod
-    def load(cls, path: str, debug=True):
+    def load(cls, path: str | Path, debug=True):
         """
         Load an OpenControl repository from a path to the
         `opencontrol.yaml` file.
         """
 
-        p = Path(path)
+        p = Path(path) if isinstance(path, str) else path
         if debug:
             FILE_SIGNAL.connect(OpenControl.debug_file)
 
@@ -220,7 +220,7 @@ class OpenControl(OpenControlElement):
 
     def save_as(self, base_dir):
         """Save an OpenControl repo in a new location"""
-        root = self.dict(exclude={"standards", "components", "systems"})
+        root = self.model_dump(exclude={"standards", "components", "systems"})
         root["certifications"] = []
         for cert in self.certifications:
             cert_storage = cert.storage_path(base_dir)  # type: ignore[attr-defined]
@@ -319,7 +319,7 @@ class OpenControlYaml(BaseModel):
         return False
 
     def resolve_fen_component(self, obj, component_path):
-        fc = FenComponent.parse_obj(obj)
+        fc = FenComponent.model_validate(obj)
         resolved_satisfiers = []
         for satisfier in fc.satisfies:
             satisfier_path = component_path.parent / satisfier
@@ -327,7 +327,7 @@ class OpenControlYaml(BaseModel):
                 FILE_SIGNAL.send(self, operation="read", path=satisfier_path)
                 with satisfier_path.open() as f:
                     obj = rtyaml.load(f)
-                    family = FenFamily.parse_obj(obj)
+                    family = FenFamily.model_validate(obj)
                     for satisfaction in family.satisfies:
                         satisfaction._file = satisfier_path
                         resolved_satisfiers.append(satisfaction)
@@ -346,7 +346,7 @@ class OpenControlYaml(BaseModel):
             if self._is_fen(obj):
                 return self.resolve_fen_component(obj, component_path)
             else:
-                comp = Component.parse_obj(obj)
+                comp = Component.model_validate(obj)
             return comp
 
     def resolve_certifications(self, relative_to):
@@ -357,7 +357,7 @@ class OpenControlYaml(BaseModel):
                 FILE_SIGNAL.send(self, operation="read", path=certification_path)
                 with certification_path.open() as f:
                     obj = rtyaml.load(f)
-                    cert = Certification.parse_obj(obj)
+                    cert = Certification.model_validate(obj)
                     cert._file = certification
                     certifications.append(cert)
             else:
@@ -381,7 +381,7 @@ class OpenControlYaml(BaseModel):
                     license = obj.pop("license", "")
 
                     controls = {
-                        control: StandardControl.parse_obj(desc)
+                        control: StandardControl.model_validate(desc)
                         for control, desc in obj.items()
                         if "family" in desc
                     }

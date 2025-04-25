@@ -1,7 +1,8 @@
 import os
 from datetime import datetime
 
-from flask import Flask
+from flask import Flask, abort, current_app, render_template, send_from_directory
+from jinja2 import TemplateNotFound
 from loguru import logger
 
 from app.config import DevelopmentConfig, TestingConfig
@@ -52,5 +53,36 @@ def create_app(config_name=None):
     app.config.from_object(config_map.get(config_name, DevelopmentConfig))
 
     app.register_blueprint(bp)
+
+    @app.errorhandler(404)
+    def page_not_found(error):
+        message: dict = {
+            "date": date,
+            "code": 404,
+            "title": "Page not found",
+            "content": error,
+        }
+        try:
+            return render_template("pages/error.html", **message), 404
+        except TemplateNotFound:
+            abort(404)
+
+    @app.errorhandler(500)
+    def internal_error(error):
+        message: dict = {
+            "date": date,
+            "code": 500,
+            "title": "Page not found",
+            "content": error,
+        }
+        return render_template("pages/error.html", **message), 500
+
+    @app.route("/favicon.ico")
+    def favicon():
+        return send_from_directory(
+            os.path.join(current_app.root_path, "static"),
+            "favicon.ico",
+            mimetype="image/vnd.microsoft.icon",
+        )
 
     return app

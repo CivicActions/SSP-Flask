@@ -50,3 +50,9 @@ def get_project_root():
             return parent
     logger.error("Project root (with pyproject.toml) not found.")
     raise FileNotFoundError("Project root (with pyproject.toml) not found.")
+
+
+def get_ssp_root() -> Path:
+    project_root = get_project_root()
+    ssp_base = current_app.config.get("SSP_BASE", "ssp")
+    return project_root.joinpath(ssp_base)
