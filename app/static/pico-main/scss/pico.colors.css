@@ -1,0 +1,22 @@
+/* Error: Undefined function.
+ *    ,
+ * 27 |       (color.channel($color, "red") * 299) + (color.channel($color, "green") * 587) +
+ *    |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ *    '
+ *   colors/utilities/_utils.scss 27:8               brightness()
+ *   colors/utilities/_utils.scss 11:33              foreground-brightness()
+ *   colors/utilities/_background-colors.scss 14:9   foreground-color()
+ *   colors/utilities/_background-colors.scss 67:15  background-colors()
+ *   colors/utilities/_index.scss 8:1                @use
+ *   pico.colors.scss 2:1                            root stylesheet */
+
+body::before {
+  font-family: "Source Code Pro", "SF Mono", Monaco, Inconsolata, "Fira Mono",
+      "Droid Sans Mono", monospace, monospace;
+  white-space: pre;
+  display: block;
+  padding: 1em;
+  margin-bottom: 1em;
+  border-bottom: 2px solid black;
+  content: 'Error: Undefined function.\a    \2577 \a 27 \2502        (color.channel($color, "red") * 299) + (color.channel($color, "green") * 587) +\a    \2502         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\a    \2575 \a   colors/utilities/_utils.scss 27:8               brightness()\a   colors/utilities/_utils.scss 11:33              foreground-brightness()\a   colors/utilities/_background-colors.scss 14:9   foreground-color()\a   colors/utilities/_background-colors.scss 67:15  background-colors()\a   colors/utilities/_index.scss 8:1                @use\a   pico.colors.scss 2:1                            root stylesheet';
+}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+    <section>
+        <a
+            href="{{ url_for('routes.toolkit_render_files', subpath=file_path) }}"
+            role="button"
+        >Render file</a>
+    </section>
+    <section>
+        {{ content | safe }}
+    </section>
+{% endblock %}

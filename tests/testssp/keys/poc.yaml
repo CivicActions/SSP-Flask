@@ -1,0 +1,51 @@
+# This work is dual-licensed under Creative Commons Zero v1.0 Universal and GNU General Public License v3.0 or later.
+# The file containts example code. Replace the values with information that is pertinent to your project.
+main:
+  name:
+  title:
+  comp_org:
+  address:
+  phone:
+  email:
+system_owner: # Appendix_b Table 3‑1
+  name: John Manager
+  title: Program Manager, System Owner
+  comp_org: Client Full Name
+  address:
+  phone: 555.555.1234
+  email: john.manager@example.com
+assessor: # Appendix_b Table 4‑1
+  name: Jane Assessor
+  title: System Assessor
+  comp_org: Client Full Name
+  address:
+  phone: 555.555.2345
+  email: jane.assessor@example.com
+ao_management_poc: # Appendix_b Table 6‑1
+  name: Jan Poc
+  title: Authorizing Official
+  comp_org: Client Full Name
+  address:
+  phone: 555.555.3456
+  email: jan.poc@example.com
+tech_management_poc: # Appendix_b Table 6‑2
+  name: John Techpoc
+  title: Information Systems Security Officer (ISSO)
+  comp_org: CivicActions
+  address:
+  phone: 555.555.4567
+  email: isso@theclient.com
+int_isso_poc: # Appendix_b Table 7‑1
+  name: AWS East/West
+  title: Information Systems Security Officer (ISSO)
+  comp_org: Amazon Web Services
+  address:
+  phone: 555.555.5678
+  email: staff@amazon.com
+ao_isso_poc: # Appendix_b Table 7‑2
+  name: Jim Issopoc
+  title: Information Systems Security Manager (ISSM)
+  comp_org: Client Full Name
+  address:
+  phone: 555.555.6789
+  email: jim.issopoc@example.com

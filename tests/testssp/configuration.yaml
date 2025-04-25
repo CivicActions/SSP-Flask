@@ -1,0 +1,10 @@
+---
+system_security_plan:
+  title: System Security Plan (SSP) Low Baseline
+  date:
+    _iso-date: iso-date3
+    __text: '2019-11-20'
+  upi: # Unique Project Identifier
+certification:
+  name: FISMA Low Impact
+  abbr: fisma-low-impact

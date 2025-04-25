@@ -1,0 +1,17 @@
+# This work is dual-licensed under Creative Commons Zero v1.0 Universal and GNU General Public License v3.0 or later.
+# The file containts example code. Replace the values with information that is pertinent to your project.
+title: Risk Management Plan
+version: 3.4
+sections:
+  risk: # Project Risks
+    description: >-
+      The following is a list of project risks that are known at the start of the project. As the project progresses, new risks will come to light and this list will be updated. The monthly status report “Areas of Concern” section will include the most up to date risks on a monthly basis, and those will be copied to this list and submitted annually.
+    risks:
+      - name: Security Clearances
+        description: The time need to get security clearances could delay the project.
+        mitigation: The project manager will work with the Client to ensure that clearances are performed in a timely manner.
+        owner: Project Manager
+      - name: Content Migration
+        description: The content migration could surface unforeseen issues.
+        mitigation: A thorough content inventory prior to beginning the migration should provide insight into issues before they arise.
+        owner: Engineer

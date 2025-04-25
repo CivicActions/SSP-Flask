@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+    {% for dir_name, file_list in files.items() %}
+        {% if file_list is iterable %}
+            {% set parts = dir_name.split("/") %}
+            <h3>{{ parts | last | upper }}</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th scope="col">File path</th>
+                        <th scope="col">View</th>
+                        <th scope="col">Render</th>
+                </thead>
+                <tbody>
+                {% for file in file_list %}
+                    <tr>
+                        <td>{{ dir_name }}/{{ file }}</td>
+                        <td><a
+                            href="{{ url_for('routes.rendered_view_file', subpath=dir_name + '/' + file) }}"
+                        >View</a></td>
+                        <td>Render</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    {% endfor %}
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

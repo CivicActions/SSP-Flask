@@ -1,0 +1,39 @@
+profile: xccdf_org.ssgproject.content_profile_stig-rhel6-server-upstream_customized
+ssg_version: 0.1.49
+baseline: DISA STIG
+benchmark: /usr/share/xml/scap/ssg/content/ssg-rhel6-ds.xml
+time: '2020-05-14T13:53:12'
+checklist: http://checklists.nist.gov/xccdf/1.2
+catalog:
+  high:
+  - title: Enable FIPS Mode in GRUB2
+    rule_id: xccdf_org.ssgproject.content_rule_grub2_enable_fips_mode
+    justification: >-
+      Full FIPS mode is not available in the AWS us-east cloud as the hardware
+      is not guaranteed to be certified. However, this site makes use of FIPS
+      compliant openssl software and SSL certificates.
+  - title: Install Virus Scanning Software
+    rule_id: xccdf_org.ssgproject.content_rule_install_antivirus
+    justification: This site employs ClamAV for anti-virus scanning and updates the database daily.
+  - title: Ensure Software Patches Installed
+    rule_id: xccdf_org.ssgproject.content_rule_security_patches_up_to_date
+    justification: Software patches are installed twice monthly.
+  medium:
+  - title: Install Smart Card Packages For Multifactor Authentication
+    rule_id: xccdf_org.ssgproject.content_rule_install_smartcard_packages
+    justification: Console and smart card logins are disallowed.
+  - title: Enable Smart Card Login
+    rule_id: xccdf_org.ssgproject.content_rule_smartcard_auth
+    justification: Console and smart card logins are disallowed.
+  - title: Set Lockout Time for Failed Password Attempts
+    rule_id: xccdf_org.ssgproject.content_rule_accounts_passwords_pam_faillock_unlock_time-storage_disabled
+    justification: >-
+      Passwords are only used after SSH key login by administrators to achieve
+      root access. Only administrators have accounts; two-factor authentication
+      is used and the accounts are audited monthly.
+  - title: Set Password Maximum Consecutive Repeating Characters
+    rule_id: xccdf_org.ssgproject.content_rule_accounts_password_pam_maxrepeat
+    justification: >-
+      Passwords are only used after SSH key login by administrators to achieve
+      root access. Only administrators have accounts; two-factor authentication
+      is used and the accounts are audited monthly.

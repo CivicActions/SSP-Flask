@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+    <h2>{{ project.metadata.description }}</h2>
+    <h3>Maintainers</h3>
+    <ul>
+    {% for maintainer in project.metadata.maintainers %}
+        <li>{{ maintainer }}</li>
+    {% endfor %}
+    </ul>
+    <h4>Components</h4>
+    <ul>
+    {% for component in project.components %}
+        <li>{{ component }}</li>
+    {% endfor %}
+    </ul>
+    <h4>Standards</h4>
+    <ul>
+    {% for standard in project.standards %}
+        <li>{{ standard }}</li>
+    {% endfor %}
+    </ul>
+    <h4>Components</h4>
+    <ul>
+    {% for certification in project.certifications %}
+        <li>{{ certification }}</li>
+    {% endfor %}
+    </ul>
+{% endblock %}

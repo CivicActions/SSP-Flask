@@ -1,0 +1,21 @@
+/* Error: Undefined function.
+ *   ,
+ * 7 |     "rgb(" + color.channel($color, "red") + ", " + color.channel($color, "green") + ", " +
+ *   |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ *   '
+ *   helpers/_functions.scss 7:14         display-rgb()
+ *   themes/default/_styles.scss 102:171  @use
+ *   themes/_default.scss 2:1             @use
+ *   _index.scss 7:1                      @use
+ *   pico.fluid.classless.scss 2:1        root stylesheet */
+
+body::before {
+  font-family: "Source Code Pro", "SF Mono", Monaco, Inconsolata, "Fira Mono",
+      "Droid Sans Mono", monospace, monospace;
+  white-space: pre;
+  display: block;
+  padding: 1em;
+  margin-bottom: 1em;
+  border-bottom: 2px solid black;
+  content: 'Error: Undefined function.\a   \2577 \a 7 \2502      "rgb(" + color.channel($color, "red") + ", " + color.channel($color, "green") + ", " +\a   \2502               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\a   \2575 \a   helpers/_functions.scss 7:14         display-rgb()\a   themes/default/_styles.scss 102:171  @use\a   themes/_default.scss 2:1             @use\a   _index.scss 7:1                      @use\a   pico.fluid.classless.scss 2:1        root stylesheet';
+}

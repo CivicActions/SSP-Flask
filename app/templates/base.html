@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    {% block head %}
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>{% block title %}{% endblock %} | SSP Toolkit</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='pico-main/css/pico.min.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    {% endblock %}
+</head>
+<body>
+    {% include "common/nav.html" %}
+    <main class="container">
+        <h1 class="title">{{ page_title }}</h1>
+        {% include "common/messages.html" %}
+        <section class="row">
+            {% block content %}{% endblock %}
+        </section>
+    </main>
+    {% include "common/footer.html" %}
+    {% block scripts %}
+    {% endblock %}
+</body>
+</html>
