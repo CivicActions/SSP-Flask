@@ -1,0 +1,44 @@
+name: Python Security Scan
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+jobs:
+  security-check:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install bandit
+
+    - name: Run Bandit security scan
+      run: |
+        bandit -r . -c pyproject.toml -f json -o bandit-results.json
+      continue-on-error: true
+
+    - name: Check scan results
+      run: |
+        if [ -f bandit-results.json ]; then
+          if grep -q '"SEVERITY_HIGH": [1-9]' bandit-results.json; then
+            echo "High severity security issues found!"
+            exit 1
+          fi
+        fi
+
+    - name: Upload scan results
+      uses: actions/upload-artifact@v4
+      with:
+        name: bandit-results
+        path: bandit-results.json
