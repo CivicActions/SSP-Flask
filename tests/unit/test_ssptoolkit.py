@@ -63,13 +63,13 @@ def test_load_controls_by_id(app_context):
     assert "AC-2" in controls
 
 
-def test_config_keys():
+def test_config_keys(app_context):
     config = ToolkitConfig()
     assert len(config.config_files) == 15
     assert "sop" in config.config
 
 
-def test_config_values():
+def test_config_values(app_context):
     config = ToolkitConfig()
     contractor = config.check_config_values(file="contractor", key="name_short")
     assert contractor == "CivicActions"
