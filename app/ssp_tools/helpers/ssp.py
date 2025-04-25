@@ -7,7 +7,7 @@ from typing import List
 
 from pydantic import BaseModel
 
-from app.ssp_tools.makefamilies.family import Family
+from app.ssp_tools.family import Family
 
 
 class Ssp(BaseModel):
