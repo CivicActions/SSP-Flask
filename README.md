@@ -73,7 +73,7 @@ app using the following commands:
 
 ```shell
 uv sync
-uv run -- flask --port 3000
+uv run -- flask run --port 3000
 ```
 
 You should see a message similar the following, and should be able to access
