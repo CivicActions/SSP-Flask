@@ -1,7 +1,7 @@
 schema_version: "1.0.0"
-name: Reusable Component Library
+name: Test Component Library
 metadata:
-  description: Reusable OpenControl Components (SSP-Toolkit).
+  description: Test OpenControl Components (SSP-Testkit).
   maintainers:
     - CivicActions
 components:

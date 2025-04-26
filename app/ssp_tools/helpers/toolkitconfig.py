@@ -6,10 +6,7 @@ import yaml
 from flask import flash
 from loguru import logger
 
-from app.config import Config
-from app.helpers.helpers import get_project_root
-
-project_root = get_project_root()
+from app.helpers.helpers import get_ssp_root
 
 
 @dataclass
@@ -22,12 +19,14 @@ class ToolkitConfig:
             "justifications.yaml": "justify",
         }
     )
-    ssp_base: Path = project_root.joinpath(Config.SSP_BASE)
-    keys: Path = ssp_base.joinpath("keys")
+    ssp_base: Path = field(default_factory=Path)
+    keys: Path = field(default_factory=Path)
     config_files: list[()] = field(default_factory=list)
     config: dict = field(default_factory=dict)
 
     def __post_init__(self):
+        self.ssp_base = get_ssp_root()
+        self.keys = self.ssp_base.joinpath("keys")
         opencontrol = self.ssp_base.joinpath("opencontrol").with_suffix(".yaml")
         try:
             with open(opencontrol, "r") as f:

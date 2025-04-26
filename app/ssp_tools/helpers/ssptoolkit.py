@@ -5,11 +5,13 @@ directory of this distribution and at https://github.com/CivicActions/ssp-toolki
 
 import mmap
 import re
+from collections import defaultdict
 from pathlib import Path
 
 import md_toc
 import yaml
 
+from app.helpers.helpers import get_ssp_root
 from app.ssp_tools.helpers import secrender
 from app.ssp_tools.helpers.opencontrol import OpenControl
 from app.ssp_tools.helpers.toolkitconfig import ToolkitConfig
@@ -43,7 +45,8 @@ def to_oc_control_id(control_id: str) -> str:
 
 
 def get_project() -> OpenControl:
-    oc_file = Path("opencontrol").with_suffix(".yaml")
+    ssp_root = get_ssp_root()
+    oc_file = ssp_root.joinpath("opencontrol").with_suffix(".yaml")
     if oc_file.is_file():
         project = OpenControl.load(oc_file.as_posix())
     else:
@@ -54,9 +57,10 @@ def get_project() -> OpenControl:
 def get_certification_baseline() -> list:
     project = get_project()
     certifications: list = []
+    ssp_root = get_ssp_root()
     for certs in project.certifications:
         try:
-            with open(certs, "r") as s:
+            with open(ssp_root.joinpath(certs), "r") as s:
                 certifications.append(yaml.load(s, Loader=yaml.SafeLoader))
         except FileNotFoundError as error:
             raise error
@@ -71,10 +75,11 @@ def get_certification_baseline() -> list:
 
 def get_standards() -> tuple:
     project = get_project()
+    ssp_root = get_ssp_root()
     standards: list = []
     for standard in project.standards:
         try:
-            with open(standard, "r") as s:
+            with open(ssp_root.joinpath(standard), "r") as s:
                 standards_list = yaml.load(s, Loader=yaml.SafeLoader)
         except FileNotFoundError as error:
             raise error
@@ -99,12 +104,14 @@ def get_standards_family_name(family: str, standards: list) -> str:
 
 
 def get_component_files(components: list) -> dict:
-    component_files: dict = {}
-    for c in components:
-        with open(Path(c).joinpath("component.yaml"), "r") as cfp:
+    component_files: defaultdict = defaultdict()
+    ssp_root = get_ssp_root()
+    rendered = ssp_root.joinpath("rendered")
+    for component_dir in components:
+        with rendered.joinpath(component_dir, "component.yaml").open("r") as cfp:
             component = yaml.load(cfp, Loader=yaml.SafeLoader)
         for family in component.get("satisfies"):
-            component_file = Path().joinpath(c, family)
+            component_file = rendered.joinpath(component_dir, family)
             family_name = component_file.stem
             if family_name not in component_files:
                 component_files[family_name] = []
