@@ -12,8 +12,6 @@ from loguru import logger
 from app.routes import bp
 from app.ssp_tools.helpers.toolkitconfig import ToolkitConfig
 
-date = datetime.now().strftime("%Y")
-
 
 @bp.route("/")
 def index():
@@ -24,7 +22,6 @@ def index():
         abort(400, description="Missing required file: opencontrol.yaml")
 
     content: dict = {
-        "date": date,
         "title": "Home",
         "page_title": opencontrol.get("name", "Home"),
         "project": opencontrol,
