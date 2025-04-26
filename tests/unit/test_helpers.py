@@ -1,3 +1,8 @@
+"""
+Copyright 2019-2025 CivicActions, Inc. See the README file at the top-level
+directory of this distribution and at https://github.com/CivicActions/ssp-flask#license.
+"""
+
 from pathlib import Path
 
 from app.helpers.helpers import file_to_html, get_project_root, get_ssp_root
