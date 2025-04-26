@@ -3,7 +3,6 @@ Copyright 2019-2025 CivicActions, Inc. See the README file at the top-level
 directory of this distribution and at https://github.com/CivicActions/ssp-flask#license.
 """
 
-from datetime import datetime
 from pathlib import Path
 
 from flask import render_template
