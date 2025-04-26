@@ -16,8 +16,6 @@ from app.routes import bp
 
 app_path = get_project_root()
 
-date = datetime.now().strftime("%Y")
-
 logs_dir = app_path.joinpath("logs")
 if not logs_dir.exists():
     logs_dir.mkdir()
@@ -59,10 +57,13 @@ def create_app(config_name=None):
 
     app.register_blueprint(bp)
 
+    @app.context_processor
+    def inject_now():
+        return {"year": datetime.now().year}
+
     @app.errorhandler(404)
     def page_not_found(error):
         message: dict = {
-            "date": date,
             "code": 404,
             "title": "Page not found",
             "content": error,
@@ -75,7 +76,6 @@ def create_app(config_name=None):
     @app.errorhandler(500)
     def internal_error(error):
         message: dict = {
-            "date": date,
             "code": 500,
             "title": "Page not found",
             "content": error,

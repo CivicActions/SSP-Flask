@@ -3,15 +3,11 @@ Copyright 2019-2025 CivicActions, Inc. See the README file at the top-level
 directory of this distribution and at https://github.com/CivicActions/ssp-flask#license.
 """
 
-from datetime import datetime
-
 from flask import redirect, request
 
 from app.routes import bp
 from app.ssp_tools.createfiles import create_files
 from app.ssp_tools.helpers.toolkitconfig import ToolkitConfig
-
-date = datetime.now().strftime("%Y")
 
 
 @bp.route("/createfiles", defaults={"subpath": ""}, methods=["GET"])
