@@ -1,16 +1,16 @@
 """
-Copyright 2019-2024 CivicActions, Inc. See the README file at the top-level
-directory of this distribution and at https://github.com/CivicActions/compliancetools#license.
+Copyright 2019-2025 CivicActions, Inc. See the README file at the top-level
+directory of this distribution and at https://github.com/CivicActions/ssp-flask#license.
 """
 
 from pathlib import Path
 
 import yaml
-from tools.helpers import ssptoolkit
-from tools.helpers.ssp import Ssp
-from tools.helpers.ssptoolkit import find_toc_tag
-from tools.makefamilies.family import Control
-from tools.makefamilies.makefamilies import create_family
+from app.ssp_tools.helpers import ssptoolkit
+from app.ssp_tools.helpers.ssp import Ssp
+from app.ssp_tools.helpers.ssptoolkit import find_toc_tag
+from app.ssp_tools.family import Control
+from app.ssp_tools.makefamilies import create_family
 
 project = ssptoolkit.get_project()
 write_to = Path("docs")

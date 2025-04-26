@@ -1,6 +1,6 @@
 """
-Copyright 2019-2024 CivicActions, Inc. See the README file at the top-level
-directory of this distribution and at https://github.com/CivicActions/ssp-toolkit#license.
+Copyright 2019-2025 CivicActions, Inc. See the README file at the top-level
+directory of this distribution and at https://github.com/CivicActions/ssp-flask#license.
 
 Given a YAML file and path to directory of secrendered component files,
 this tool generates Standard Operating Procedure (SOP) policy markdown files.
@@ -13,8 +13,8 @@ from io import StringIO
 from pathlib import Path
 
 import click
-from tools.helpers.hash_checker.hash_checker import FileChecker
-from tools.helpers.ssptoolkit import load_template_args, load_yaml_files, write_toc
+from app.ssp_tools.helpers.hash_checker import FileChecker
+from app.ssp_tools.helpers.ssptoolkit import load_template_args, load_yaml_files, write_toc
 
 hashes = FileChecker()
 

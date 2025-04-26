@@ -1,14 +1,14 @@
 """
-Copyright 2019-2024 CivicActions, Inc. See the README file at the top-level
-directory of this distribution and at https://github.com/CivicActions/ssp-toolkit#license.
+Copyright 2019-2025 CivicActions, Inc. See the README file at the top-level
+directory of this distribution and at https://github.com/CivicActions/ssp-flask#license.
 """
 
 from pathlib import Path
 from typing import Generator
 
-from tools.helpers import ssptoolkit
-from tools.helpers.project import Project
-from tools.makefamilies.family import Control, Family, Part
+from app.ssp_tools.helpers import ssptoolkit
+from app.ssp_tools.helpers.project import Project
+from app.ssp_tools.family import Control, Family, Part
 
 project = Project()
 controls_dir = Path("docs/controls")

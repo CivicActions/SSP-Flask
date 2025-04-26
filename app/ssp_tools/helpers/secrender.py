@@ -2,7 +2,6 @@
 Copyright 2019-2025 CivicActions, Inc. See the README file at the top-level
 directory of this distribution and at https://github.com/CivicActions/ssp-flask#license.
 
-
 Example tool to render a template using data loaded from a YAML
 file.  One intended use case: load an OSCAL style YAML file and render
 a Jinja2 template to produce the markdown for SSP front matter.
