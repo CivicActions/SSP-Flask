@@ -6,10 +6,11 @@ directory of this distribution and at https://github.com/CivicActions/ssp-flask#
 from pathlib import Path
 
 import yaml
+
+from app.ssp_tools.family import Control
 from app.ssp_tools.helpers import ssptoolkit
 from app.ssp_tools.helpers.ssp import Ssp
 from app.ssp_tools.helpers.ssptoolkit import find_toc_tag
-from app.ssp_tools.family import Control
 from app.ssp_tools.makefamilies import create_family
 
 project = ssptoolkit.get_project()

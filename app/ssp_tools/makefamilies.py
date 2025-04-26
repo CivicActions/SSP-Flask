@@ -6,9 +6,9 @@ directory of this distribution and at https://github.com/CivicActions/ssp-flask#
 from pathlib import Path
 from typing import Generator
 
+from app.ssp_tools.family import Control, Family, Part
 from app.ssp_tools.helpers import ssptoolkit
 from app.ssp_tools.helpers.project import Project
-from app.ssp_tools.family import Control, Family, Part
 
 project = Project()
 controls_dir = Path("docs/controls")

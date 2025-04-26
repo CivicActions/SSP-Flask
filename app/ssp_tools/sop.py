@@ -13,8 +13,13 @@ from io import StringIO
 from pathlib import Path
 
 import click
+
 from app.ssp_tools.helpers.hash_checker import FileChecker
-from app.ssp_tools.helpers.ssptoolkit import load_template_args, load_yaml_files, write_toc
+from app.ssp_tools.helpers.ssptoolkit import (
+    load_template_args,
+    load_yaml_files,
+    write_toc,
+)
 
 hashes = FileChecker()
 

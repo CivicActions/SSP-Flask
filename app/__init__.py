@@ -59,7 +59,7 @@ def create_app(config_name=None):
 
     @app.context_processor
     def inject_now():
-        return {'year': datetime.now().year}
+        return {"year": datetime.now().year}
 
     @app.errorhandler(404)
     def page_not_found(error):
