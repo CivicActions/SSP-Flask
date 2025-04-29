@@ -24,11 +24,11 @@ cp -rf [PATH TO YOUR REPO]/ssp-toolkit ./ssp
 ```
 
 If you are starting a new project, clone the SSP Toolkit into a directory named `ssp` within the `ssp-flask`
-directory and checkout the v2.0.0 tag with the correct file structure to use with SSP Flask.
+directory and download the v2.0.1 tag with the correct file structure to use with SSP Flask.
 
 ```shell
 git clone git@github.com:CivicActions/ssp-toolkit.git ssp
-git checkout tags v2.0.0
+git checkout tags v2.0.1
 ```
 
 ### Project setup
@@ -130,6 +130,33 @@ a commit. Some of the checkers can be pretty pedantic, but they are helpful, if 
 convention for branches should use the prefix `ssp-[TICKET NUMBER]-` followed my some pithy descriptor. For example `ssp-20-help-route`.
 
 Pull Requests require at least one reviewer, and require that all scans and checks pass before merging.
+
+### Running test
+
+We are using [pytest](https://docs.pytest.org/en/stable/) for code testing and
+[pytest-cov](https://pytest-cov.readthedocs.io/en/latest/) for generating coverage reports.
+
+Tests live in the `/tests/` directory. Routing tests go in the `/test/test_routes/` directory, and `/test/unit/` contains test of function and
+methods used throughout the code base.
+
+There is simplified `SSP Toolkit` project called `testssp` that is used to for testing
+the `ssp_tools` functions.
+
+#### Run pytests
+
+```shell
+uv run pytest -s -v
+```
+
+#### Coverage report
+
+To run tests with a coverage report run the following:
+
+```shell
+uv run pytest --cov=app --cov-report=html tests
+```
+
+The HTML coverage reports will be written to a directory named `htmlcov` which is .gitignored.
 
 ## License
 
