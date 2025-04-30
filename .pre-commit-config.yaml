@@ -33,8 +33,3 @@ repos:
     hooks:
     - id: bandit
       args: [--config, bandit.yaml, --recursive]
-  - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.5.27
-    hooks:
-      - id: uv-export
-        args: ["--output-file", "requirements.txt"]
