@@ -2,7 +2,7 @@
 name = "ssp-flask"
 version = "0.1.0"
 description = "A Flask wrapper for the SSP Toolkit"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
     "flask>=3.1.0",
     "jinja2>=3.1.6",
