@@ -59,7 +59,7 @@ You can either create a `rendered` directory and move your existing root level d
 `appendencies`, `components`, `docs`, `docx` and `frontmatter`, to the rendered
 directory, or let SSP Flask create the rendered directory and create all new files there.
 
-If you use the `v2.0.0` tag version of the SSP Toolkit, the files are structured to work with SSP Flask.
+If you use the `v2.0.1` tag version of the SSP Toolkit, the files are structured to work with SSP Flask.
 
 ## Usage
 
