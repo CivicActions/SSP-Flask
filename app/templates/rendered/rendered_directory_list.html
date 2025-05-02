@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+    {% if directories is defined and directories|length > 0 %}
+        <h3>Directories</h3>
+        <ul>
+            {% for dir in directories %}
+                {% set parts = dir.split("/") %}
+                <li>
+                    <a
+                        href="{{ url_for('routes.rendered_path_view', subpath=dir) }}"
+                    >{{ parts | last }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% if files is defined and files|length > 0 %}
+        <h3>Files</h3>
+        <ul>
+            {% for file in files %}
+                {% set parts = file.split("/") %}
+                <li>
+                    <a
+                            href="{{ url_for('routes.rendered_path_view', subpath=file) }}"
+                        >{{ parts | last }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% if not directories and not files %}
+        <p>No rendered files or directories found.</p>
+    {% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
