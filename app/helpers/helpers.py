@@ -23,10 +23,12 @@ def file_to_html(path: Path | str) -> str:
         with open(file, "r") as fp:
             if file.suffix == ".yaml":
                 file_content = yaml_to_html_list(yaml.safe_load(fp))
-            elif file.suffix == ".md":
+            elif file.suffix == ".md" or file.suffix == ".j2":
                 file_content = markdown.markdown(fp.read())
             elif file.suffix == ".json":
                 file_content = json.dumps(json.loads(fp.read()))
+            else:
+                file_content = fp.read()
     except FileNotFoundError:
         logger.error(f"File { file.as_posix() } not found")
         flash(f"File { file.as_posix() } not found", "error")

@@ -14,15 +14,15 @@ from app.ssp_tools.helpers.toolkitconfig import ToolkitConfig
 def rendered_view():
     config = ToolkitConfig()
     rendered_base = config.ssp_base.joinpath("rendered")
-    rendered_dirs = list_directories(path=rendered_base)
-    rendered_files = list_files(path=rendered_base)
+    directories = list_directories(path=rendered_base)
+    files = list_files(path=rendered_base)
     content: dict = {
         "title": "Rendered Files",
         "page_title": "Rendered Files",
-        "directories": rendered_dirs,
-        "files": rendered_files,
+        "directories": directories,
+        "files": files,
     }
-    return render_template("rendered/rendered_directory_list.html", **content)
+    return render_template("rendered/rendered_file_list.html", **content)
 
 
 @bp.route("/rendered/", defaults={"subpath": ""}, methods=["GET"])
@@ -31,15 +31,15 @@ def rendered_path_view(subpath: str):
     ssp_base = get_ssp_root()
     file_path = ssp_base.joinpath(subpath)
     if file_path.is_dir():
-        rendered_dirs = list_directories(path=file_path)
-        rendered_files = list_files(path=file_path)
+        directory_list = list_directories(path=file_path)
+        file_list = list_files(path=file_path)
         directory: dict = {
             "title": file_path.name.capitalize(),
             "page_title": file_path.name.capitalize(),
-            "directories": rendered_dirs,
-            "files": rendered_files,
+            "directories": directory_list,
+            "files": file_list,
         }
-        return render_template("rendered/rendered_directory_list.html", **directory)
+        return render_template("rendered/rendered_file_list.html", **directory)
 
     file_contents = file_to_html(file_path)
     files: dict = {
