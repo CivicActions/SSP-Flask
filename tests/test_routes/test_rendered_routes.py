@@ -9,8 +9,16 @@ def test_rendered_files_route(client):
     assert response.status_code == 200
 
 
+def test_rendered_files_route_content(client):
+    response = client.get("/rendered")
+    assert 'href="/rendered/rendered/appendices"' in response.text
+
+
 def test_rendered_view_file(client):
-    response = client.get(
-        "/rendered/test/testssp/rendered/appendices/configuration-management.md"
-    )
+    response = client.get("/rendered/rendered/appendices/configuration-management.md")
     assert response.status_code == 200
+
+
+def test_rendered_view_file_content(client):
+    response = client.get("/rendered/rendered/appendices/configuration-management.md")
+    assert "<h2>Overview</h2>" in response.text

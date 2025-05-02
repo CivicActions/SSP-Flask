@@ -15,18 +15,20 @@ from flask import flash
 
 from app.ssp_tools.helpers import secrender
 from app.ssp_tools.helpers.ssptoolkit import find_toc_tag, load_template_args
+from app.ssp_tools.helpers.toolkitconfig import ToolkitConfig
 
 
-def create_files(ssp_base: Path | str, to_render: str):
-    ssp_path: Path = Path(ssp_base) if isinstance(ssp_base, str) else ssp_base
-    output_to: Path = ssp_path.joinpath(to_render.replace("templates", "rendered"))
-    render: Path = ssp_path.joinpath(to_render)
-    render = render.with_suffix(".md.j2") if render.suffix == ".md" else render
+def create_files(to_render: str):
+    config = ToolkitConfig()
+    ssp_base: Path = config.ssp_base
+    output_to: Path = ssp_base.joinpath(to_render.replace("templates", "rendered"))
+    render: Path = ssp_base.joinpath(to_render)
 
     if render.exists():
         if render.is_dir():
             create_multiple_files(to_render=render, output_to=output_to)
         elif render.is_file():
+            render = render.with_suffix(".md.j2") if render.suffix == ".md" else render
             write_file(to_render=render, output_to=output_to)
     else:
         flash(f"File '{render}' does not exist.", "error")
@@ -40,7 +42,7 @@ def create_multiple_files(to_render: Path, output_to: Path):
 
     for template in template_files:
         new_file = output_to.joinpath(template)
-        write_file(to_render=new_file, output_to=output_to)
+        write_file(to_render=new_file, output_to=output_to.joinpath(new_file.name))
 
 
 def write_file(to_render: Path, output_to: Path):

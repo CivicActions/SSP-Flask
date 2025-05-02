@@ -4,31 +4,35 @@
 {% block page_title %}{{ title }}{% endblock %}
 
 {% block content %}
-    {% for dir_name, file_list in files.items() %}
-        {% if file_list is iterable %}
-            {% set parts = dir_name.split("/") %}
-            <h3>{{ parts | last | upper }}</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th scope="col">File path</th>
-                        <th scope="col">View</th>
-                        <th scope="col">Render</th>
-                </thead>
-                <tbody>
-                {% for file in file_list %}
-                    <tr>
-                        <td>{{ dir_name }}/{{ file }}</td>
-                        <td><a
-                            href="{{ url_for('routes.rendered_view_file', subpath=dir_name + '/' + file) }}"
-                        >View</a></td>
-                        <td>Render</td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        {% endif %}
-    {% endfor %}
+    {% if directories is defined and directories|length > 0 %}
+        <h3>Directories</h3>
+        <ul>
+            {% for dir in directories %}
+                {% set parts = dir.split("/") %}
+                <li>
+                    <a
+                        href="{{ url_for('routes.rendered_path_view', subpath=dir) }}"
+                    >{{ parts | last }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% if files is defined and files|length > 0 %}
+        <h3>Files</h3>
+        <ul>
+            {% for file in files %}
+                {% set parts = file.split("/") %}
+                <li>
+                    <a
+                            href="{{ url_for('routes.rendered_path_view', subpath=file) }}"
+                        >{{ parts | last }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% if not directories and not files %}
+        <p>No rendered files or directories found.</p>
+    {% endif %}
 {% endblock %}
 
 {% block scripts %}

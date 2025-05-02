@@ -23,10 +23,12 @@ def file_to_html(path: Path | str) -> str:
         with open(file, "r") as fp:
             if file.suffix == ".yaml":
                 file_content = yaml_to_html_list(yaml.safe_load(fp))
-            elif file.suffix == ".md":
+            elif file.suffix == ".md" or file.suffix == ".j2":
                 file_content = markdown.markdown(fp.read())
             elif file.suffix == ".json":
                 file_content = json.dumps(json.loads(fp.read()))
+            else:
+                file_content = fp.read()
     except FileNotFoundError:
         logger.error(f"File { file.as_posix() } not found")
         flash(f"File { file.as_posix() } not found", "error")
@@ -61,3 +63,21 @@ def get_ssp_root() -> Path:
     project_root = get_project_root()
     ssp_base = current_app.config.get("SSP_BASE", "ssp")
     return project_root.joinpath(ssp_base)
+
+
+def list_directories(path: Path) -> list[str]:
+    ssp_base = get_ssp_root()
+    return [
+        directory.relative_to(ssp_base).as_posix()
+        for directory in path.iterdir()
+        if directory.is_dir()
+    ]
+
+
+def list_files(path: Path) -> list[str]:
+    ssp_base = get_ssp_root()
+    return [
+        filepath.relative_to(ssp_base).as_posix()
+        for filepath in path.iterdir()
+        if filepath.is_file()
+    ]
