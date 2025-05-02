@@ -24,11 +24,11 @@ cp -rf [PATH TO YOUR REPO]/ssp-toolkit ./ssp
 ```
 
 If you are starting a new project, clone the SSP Toolkit into a directory named `ssp` within the `ssp-flask`
-directory and download the v2.0.1 tag with the correct file structure to use with SSP Flask.
+directory and checkout the `simplified` branch with the correct file structure to use with SSP Flask.
 
 ```shell
 git clone git@github.com:CivicActions/ssp-toolkit.git ssp
-git checkout tags v2.0.1
+git checkout simplified
 ```
 
 ### Project setup
@@ -59,7 +59,7 @@ You can either create a `rendered` directory and move your existing root level d
 `appendencies`, `components`, `docs`, `docx` and `frontmatter`, to the rendered
 directory, or let SSP Flask create the rendered directory and create all new files there.
 
-If you use the `v2.0.1` tag version of the SSP Toolkit, the files are structured to work with SSP Flask.
+If you use the `simplified` branch of the SSP Toolkit, the files are structured to work with SSP Flask.
 
 ## Usage
 
