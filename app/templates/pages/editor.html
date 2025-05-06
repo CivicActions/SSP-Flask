@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+    <article>
+        <h3>Editing: {{ filename }}</h3>
+    </article>
+    <section>
+        <textarea id="yamlEditor">{{ content }}</textarea>
+        <button id="saveButton" type="submit">Save</button>
+    </section>
+{% endblock %}
+
+{% block scripts %}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/codemirror.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/codemirror.min.js"></script>\
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/addon/fold/foldgutter.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/addon/fold/foldgutter.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/addon/fold/foldcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/addon/fold/yaml-fold.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/addon/lint/lint.min.js"></script>
+        <style>
+        .CodeMirror {
+            height: 70vh;
+            border: 1px solid #ddd;
+            font-size: 16px;
+        }
+        .cm-s-default .cm-property {
+            color: #0000cc;
+        }
+        .main-container {
+            padding: 20px;
+        }
+        .navbar {
+            margin-bottom: 20px;
+        }
+    </style>
+    <script>
+        const editor = CodeMirror.fromTextArea(document.getElementById("yamlEditor"), {
+            mode: "yaml",
+            lineNumbers: true,
+            theme: "default",
+            indentUnit: 2,
+            smartIndent: true,
+            indentWithTabs: false,
+            lineWrapping: false,
+            foldGutter: true,
+            gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+            extraKeys: {
+                "Tab": function(cm) {
+                    const spaces = Array(cm.getOption("indentUnit") + 1).join(" ");
+                    cm.replaceSelection(spaces);
+                }
+            }
+        });
+
+        document.getElementById("saveButton").addEventListener("click", function(event) {
+            const content = editor.getValue();
+            const filename = "{{ filename }}";
+
+            const form = document.createElement("form");
+            form.method = "POST";
+            form.action = "/save";
+
+            const filenameInput = document.createElement("input");
+            filenameInput.type = "hidden";
+            filenameInput.name = "filename";
+            filenameInput.value = filename;
+
+            const contentInput = document.createElement("input");
+            contentInput.type = "hidden";
+            contentInput.name = "content";
+            contentInput.value = content;
+
+            form.appendChild(filenameInput);
+            form.appendChild(contentInput);
+
+            document.body.appendChild(form);
+            form.submit();
+
+            document.body.removeChild(form);
+        });
+    </script>
+{% endblock %}
