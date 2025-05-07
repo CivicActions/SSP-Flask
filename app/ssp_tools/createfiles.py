@@ -23,12 +23,13 @@ def create_files(to_render: str):
     ssp_base: Path = config.ssp_base
     output_to: Path = ssp_base.joinpath(to_render.replace("templates", "rendered"))
     render: Path = ssp_base.joinpath(to_render)
+    if render.suffix in [".md", ".xml"]:
+        render = render.with_suffix(render.suffix + ".j2")
 
     if render.exists():
         if render.is_dir():
             create_multiple_files(to_render=render, output_to=output_to)
         elif render.is_file():
-            render = render.with_suffix(".md.j2") if render.suffix == ".md" else render
             write_file(to_render=render, output_to=output_to)
     else:
         flash(f"File '{render}' does not exist.", "error")
@@ -46,11 +47,16 @@ def create_multiple_files(to_render: Path, output_to: Path):
 
 
 def write_file(to_render: Path, output_to: Path):
+    config = ToolkitConfig()
+    ssp_base: Path = config.ssp_base
     template_args = load_template_args()
     new_file = output_to.joinpath(output_to)
     if new_file.suffix == ".j2":
         new_file = new_file.with_name(new_file.stem)
-    flash(f"Creating file: {new_file} from {to_render}", "info")
+    flash(
+        f"Creating file: {new_file.relative_to(ssp_base)} from {to_render.relative_to(ssp_base)}",
+        "info",
+    )
 
     secrender.secrender(
         template_path=to_render.as_posix(),

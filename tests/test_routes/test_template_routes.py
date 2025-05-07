@@ -18,11 +18,18 @@ def test_templates_view_file(client):
     response = client.get(
         "/templates/templates/appendices/configuration-management.md.j2"
     )
-    assert response.status_code == 200
+    assert response.status_code == 302
 
 
 def test_templates_view_file_content(client):
     response = client.get(
         "/templates/templates/appendices/configuration-management.md.j2"
     )
-    assert "<h2>Overview</h2>" in response.text
+    assert "Redirecting..." in response.text
+
+
+def test_templates_edit_file(client):
+    response = client.get(
+        "/templates/edit/templates/appendices/configuration-management.md.j2"
+    )
+    assert "CodeMirror" in response.text

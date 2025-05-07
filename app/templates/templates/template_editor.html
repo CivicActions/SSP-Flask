@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+{% block styles %}
+    <link href="{{ url_for('static', filename='css/codemirror.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/foldgutter.min.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <article>
+        <h3>Editing: {{ filename }}</h3>
+    </article>
+    <section>
+        <a
+            class="outline wide"
+            href="{{ url_for('routes.toolkit_render_files', subpath=filename) }}"
+            role="button"
+        >Render file</a>
+        <textarea id="yamlEditor">{{ content }}</textarea>
+        <button id="saveButton" type="submit">Save</button>
+    </section>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/codemirror.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/foldgutter.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/foldcode.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/lint.min.js') }}"></script>
+    <script>
+        const editor = CodeMirror.fromTextArea(document.getElementById("yamlEditor"), {
+            mode: "yaml",
+            lineNumbers: true,
+            theme: "default",
+            indentUnit: 2,
+            smartIndent: true,
+            indentWithTabs: false,
+            lineWrapping: false,
+            foldGutter: true,
+            gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+            extraKeys: {
+                "Tab": function(cm) {
+                    const spaces = Array(cm.getOption("indentUnit") + 1).join(" ");
+                    cm.replaceSelection(spaces);
+                }
+            }
+        });
+
+        document.getElementById("saveButton").addEventListener("click", function(event) {
+            const content = editor.getValue();
+            const filename = "{{ filename }}";
+
+            const form = document.createElement("form");
+            form.method = "POST";
+            form.action = "{{ url_for('routes.template_save_file', subpath=filename) }}";
+
+            const filenameInput = document.createElement("input");
+            filenameInput.type = "hidden";
+            filenameInput.name = "filename";
+            filenameInput.value = filename;
+
+            const contentInput = document.createElement("input");
+            contentInput.type = "hidden";
+            contentInput.name = "content";
+            contentInput.value = content;
+
+            form.appendChild(filenameInput);
+            form.appendChild(contentInput);
+
+            document.body.appendChild(form);
+            form.submit();
+
+            document.body.removeChild(form);
+        });
+    </script>
+{% endblock %}

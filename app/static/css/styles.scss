@@ -62,3 +62,23 @@ ul#yaml-list {
     list-style-type: none;
   }
 }
+
+a {
+  &.wide {
+    width: 100%;
+    text-align: center;
+    display: block;
+  }
+}
+
+// Code mirror
+.CodeMirror {
+    height: 70vh !important;
+    border: 1px solid #ddd;
+    font-size: 16px;
+}
+.cm-s-default {
+  .cm-property {
+    color: #0000cc;
+  }
+}
