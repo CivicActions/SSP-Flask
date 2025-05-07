@@ -8,7 +8,7 @@ from pathlib import Path
 from flask import abort, flash, redirect, render_template, request, url_for
 from ruamel.yaml import YAML, YAMLError
 
-from app.helpers.helpers import file_to_html, get_ssp_root, list_directories, list_files
+from app.helpers.helpers import get_ssp_root, list_directories, list_files
 from app.routes import bp
 from app.ssp_tools.helpers.toolkitconfig import ToolkitConfig
 
@@ -44,14 +44,7 @@ def template_path_view(subpath: str):
         }
         return render_template("templates/template_file_list.html", **directory)
 
-    file_contents = file_to_html(file_path)
-    files: dict = {
-        "title": "Template Files",
-        "page_title": file_path.name,
-        "content": file_contents,
-        "file_path": subpath.replace("rendered", "templates"),
-    }
-    return render_template("templates/template_file.html", **files)
+    return redirect(url_for("routes.template_edit_file", subpath=subpath))
 
 
 @bp.route("/templates/edit/", defaults={"subpath": ""}, methods=["GET"])
