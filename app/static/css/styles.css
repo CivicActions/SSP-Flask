@@ -59,4 +59,20 @@ ul#yaml-list li {
   list-style-type: none;
 }
 
+a.wide {
+  width: 100%;
+  text-align: center;
+  display: block;
+}
+
+.CodeMirror {
+  height: 70vh !important;
+  border: 1px solid #ddd;
+  font-size: 16px;
+}
+
+.cm-s-default .cm-property {
+  color: #0000cc;
+}
+
 /*# sourceMappingURL=styles.css.map */

@@ -8,6 +8,11 @@
         <h3>Editing: {{ filename }}</h3>
     </article>
     <section>
+        <a
+            class="outline wide"
+            href="{{ url_for('routes.toolkit_render_files', subpath=filename) }}"
+            role="button"
+        >Render file</a>
         <textarea id="yamlEditor">{{ content }}</textarea>
         <button id="saveButton" type="submit">Save</button>
     </section>
@@ -21,22 +26,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/addon/fold/foldcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/addon/fold/yaml-fold.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/addon/lint/lint.min.js"></script>
-        <style>
-        .CodeMirror {
-            height: 70vh;
-            border: 1px solid #ddd;
-            font-size: 16px;
-        }
-        .cm-s-default .cm-property {
-            color: #0000cc;
-        }
-        .main-container {
-            padding: 20px;
-        }
-        .navbar {
-            margin-bottom: 20px;
-        }
-    </style>
     <script>
         const editor = CodeMirror.fromTextArea(document.getElementById("yamlEditor"), {
             mode: "yaml",
@@ -62,7 +51,7 @@
 
             const form = document.createElement("form");
             form.method = "POST";
-            form.action = "/save";
+            form.action = "{{ url_for('routes.template_save_file', subpath=filename) }}";
 
             const filenameInput = document.createElement("input");
             filenameInput.type = "hidden";

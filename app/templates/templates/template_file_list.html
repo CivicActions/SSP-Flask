@@ -36,7 +36,7 @@
             <thead>
                 <tr>
                     <th>Directory</th>
-                    <th>View</th>
+                    <th>Edit</th>
                     <th>Render</th>
                 </tr>
             </thead>
@@ -47,7 +47,7 @@
                 <tr>
                     <td>{{ parts | last }}</td>
                     <td>
-                        <a href="{{ url_for('routes.template_path_view', subpath=file) }}">View</a>
+                        <a href="{{ url_for('routes.template_edit_file', subpath=file) }}">Edit</a>
                     </td>
                     <td>
                         <a href="{{ url_for('routes.toolkit_render_files', subpath=file) }}">Render</a>
