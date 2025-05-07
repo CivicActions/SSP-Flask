@@ -10,8 +10,8 @@
             <thead>
                 <tr>
                     <th>Directory</th>
-                    <th>View</th>
-                    <th>Render</th>
+                    <th></th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -20,7 +20,7 @@
                 <tr>
                     <td>{{ parts | last }}</td>
                     <td>
-                        <a href="{{ url_for('routes.template_path_view', subpath=dir) }}">View</a>
+                        <a href="{{ url_for('routes.template_path_view', subpath=dir) }}">Open</a>
                     </td>
                     <td>
                         <a href="{{ url_for('routes.toolkit_render_files', subpath=dir) }}">Render</a>
