@@ -5,30 +5,54 @@
 
 {% block content %}
     {% if directories is defined and directories|length > 0 %}
-        <h3>Directories</h3>
-        <ul>
+        <table>
+            <thead>
+                <tr>
+                    <th>Directory</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
             {% for dir in directories %}
                 {% set parts = dir.split("/") %}
-                <li>
-                    <a
-                        href="{{ url_for('routes.rendered_path_view', subpath=dir) }}"
-                    >{{ parts | last }}</a>
-                </li>
+                <tr>
+                    <td>
+                        <a href="{{ url_for('routes.rendered_path_view', subpath=dir) }}">{{ parts | last }}</a>
+                    </td>
+                    <td>
+                        <a href="{{ url_for('routes.toolkit_render_files', subpath=dir) }}">Render</a>
+                    </td>
+                </tr>
             {% endfor %}
-        </ul>
+            </tbody>
+        </table>
     {% endif %}
     {% if files is defined and files|length > 0 %}
-        <h3>Files</h3>
-        <ul>
+        <table>
+            <thead>
+                <tr>
+                    <th>Files</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
             {% for file in files %}
                 {% set parts = file.split("/") %}
-                <li>
-                    <a
-                            href="{{ url_for('routes.rendered_path_view', subpath=file) }}"
-                        >{{ parts | last }}</a>
-                </li>
+                <tr>
+                    <td>
+                        <a href="{{ url_for('routes.rendered_path_view', subpath=file) }}">{{ parts | last }}</a>
+                    </td>
+                    <td>
+                        <a href="{{ url_for('routes.toolkit_render_files', subpath=file) }}">Render</a>
+                    </td>
+                    <td>
+                      Export
+                    </td>
+                </tr>
             {% endfor %}
-        </ul>
+            </tbody>
+        </table>
     {% endif %}
     {% if not directories and not files %}
         <p>No rendered files or directories found.</p>
