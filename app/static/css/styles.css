@@ -63,7 +63,6 @@ a.wide {
   width: 100%;
   text-align: center;
   display: block;
-  margin-bottom: 1rem;
 }
 
 .CodeMirror {
@@ -74,10 +73,6 @@ a.wide {
 
 .cm-s-default .cm-property {
   color: #0000cc;
-}
-
-button#saveButton {
-  margin-top: 1rem;
 }
 
 /*# sourceMappingURL=styles.css.map */
