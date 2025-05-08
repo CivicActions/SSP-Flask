@@ -11,7 +11,7 @@ def test_template_files_route(client):
 
 def test_templates_files_route_content(client):
     response = client.get("/templates")
-    assert "<td>appendices</td>" in response.text
+    assert '<a href="/templates/templates/appendices">appendices</a>' in response.text
 
 
 def test_templates_view_file(client):

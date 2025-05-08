@@ -5,12 +5,10 @@
 
 {% block content %}
     {% if directories is defined and directories|length > 0 %}
-        <h3>Directories</h3>
         <table>
             <thead>
                 <tr>
                     <th>Directory</th>
-                    <th></th>
                     <th></th>
                 </tr>
             </thead>
@@ -18,9 +16,8 @@
             {% for dir in directories %}
                 {% set parts = dir.split("/") %}
                 <tr>
-                    <td>{{ parts | last }}</td>
                     <td>
-                        <a href="{{ url_for('routes.template_path_view', subpath=dir) }}">Open</a>
+                        <a href="{{ url_for('routes.template_path_view', subpath=dir) }}">{{ parts | last }}</a>
                     </td>
                     <td>
                         <a href="{{ url_for('routes.toolkit_render_files', subpath=dir) }}">Render</a>
@@ -31,12 +28,10 @@
         </table>
     {% endif %}
     {% if files is defined and files|length > 0 %}
-        <h3>Files</h3>
         <table>
             <thead>
                 <tr>
-                    <th>Directory</th>
-                    <th>Edit</th>
+                    <th>File</th>
                     <th>Render</th>
                 </tr>
             </thead>
@@ -45,9 +40,8 @@
                 {% set parts = file.split("/") %}
                 <tr>
                 <tr>
-                    <td>{{ parts | last }}</td>
                     <td>
-                        <a href="{{ url_for('routes.template_edit_file', subpath=file) }}">Edit</a>
+                        <a href="{{ url_for('routes.template_edit_file', subpath=file) }}">{{ parts | last }}</a>
                     </td>
                     <td>
                         <a href="{{ url_for('routes.toolkit_render_files', subpath=file) }}">Render</a>
