@@ -65,12 +65,12 @@ def get_ssp_root() -> Path:
     return project_root.joinpath(ssp_base)
 
 
-def list_directories(path: Path) -> list[str]:
+def list_directories(path: Path, exclude: list = []) -> list[str]:
     ssp_base = get_ssp_root()
     return [
         directory.relative_to(ssp_base).as_posix()
         for directory in path.iterdir()
-        if directory.is_dir()
+        if directory.is_dir() and directory.name not in exclude
     ]
 
 

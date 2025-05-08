@@ -2,7 +2,9 @@
 
 {% block title %}{{ title }}{% endblock %}
 {% block page_title %}{{ title }}{% endblock %}
-{% block styles %}
+
+{% block head %}
+    {{ super() }}
     <link href="{{ url_for('static', filename='css/codemirror.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/foldgutter.min.css') }}" rel="stylesheet">
 {% endblock %}

@@ -14,7 +14,7 @@ from app.ssp_tools.helpers.toolkitconfig import ToolkitConfig
 def rendered_view():
     config = ToolkitConfig()
     rendered_base = config.ssp_base.joinpath("rendered")
-    directories = list_directories(path=rendered_base)
+    directories = list_directories(path=rendered_base, exclude=["docs", "docx"])
     files = list_files(path=rendered_base)
     content: dict = {
         "title": "Rendered Files",
