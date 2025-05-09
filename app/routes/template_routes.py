@@ -8,7 +8,12 @@ from pathlib import Path
 from flask import abort, flash, redirect, render_template, request, url_for
 from ruamel.yaml import YAML, YAMLError
 
-from app.helpers.helpers import get_ssp_root, list_directories, list_files
+from app.helpers.helpers import (
+    create_breadcrumbs,
+    get_ssp_root,
+    list_directories,
+    list_files,
+)
 from app.routes import bp
 from app.ssp_tools.helpers.toolkitconfig import ToolkitConfig
 
@@ -24,6 +29,7 @@ def template_files():
         "page_title": "Templates",
         "directories": directory_list,
         "files": file_list,
+        "breadcrumbs": create_breadcrumbs(Path("templates"), "routes.template_files"),
     }
     return render_template("templates/template_file_list.html", **templates)
 
@@ -33,6 +39,7 @@ def template_files():
 def template_path_view(subpath: str):
     ssp_base = get_ssp_root()
     file_path = ssp_base.joinpath(subpath)
+    breadcrumbs = create_breadcrumbs(Path(subpath), "routes.template_path_view")
     if file_path.is_dir():
         directory_list = list_directories(path=file_path)
         file_list = list_files(path=file_path)
@@ -41,6 +48,7 @@ def template_path_view(subpath: str):
             "page_title": file_path.name.capitalize(),
             "directories": directory_list,
             "files": file_list,
+            "breadcrumbs": breadcrumbs,
         }
         return render_template("templates/template_file_list.html", **directory)
 

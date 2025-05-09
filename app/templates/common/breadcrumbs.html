@@ -1,0 +1,16 @@
+{% block breadcrumbs %}
+    {% if breadcrumbs is defined and breadcrumbs|length > 0 %}
+    <nav aria-label="breadcrumb">
+        <ul>
+            <li><a href="{{ url_for('routes.index') }}">Home</a></li>
+            {% for crumb in breadcrumbs %}
+                {% if loop.last %}
+                    <li><small><strong>{{ crumb.name|title }}</strong></small></li>
+                {% else %}
+                    <li><small><a href="{{ crumb.path }}">{{ crumb.name|title }}</a></small></li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </nav>
+    {% endif %}
+{% endblock %}
