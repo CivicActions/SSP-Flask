@@ -6,27 +6,42 @@
 {% block content %}
     <h2>{{ project.metadata.description }}</h2>
     <h3>Maintainers</h3>
-    <ul>
-    {% for maintainer in project.metadata.maintainers %}
-        <li>{{ maintainer }}</li>
-    {% endfor %}
-    </ul>
-    <h4>Components</h4>
-    <ul>
-    {% for component in project.components %}
-        <li>{{ component }}</li>
-    {% endfor %}
-    </ul>
-    <h4>Standards</h4>
-    <ul>
-    {% for standard in project.standards %}
-        <li>{{ standard }}</li>
-    {% endfor %}
-    </ul>
-    <h4>Components</h4>
-    <ul>
-    {% for certification in project.certifications %}
-        <li>{{ certification }}</li>
-    {% endfor %}
-    </ul>
+    <div class="grid">
+        <div>
+            <ul>
+            {% for maintainer in project.metadata.maintainers %}
+                <li>{{ maintainer }}</li>
+            {% endfor %}
+            </ul>
+            <h4>Components</h4>
+            <ul>
+            {% for component in project.components %}
+                {% set parts = component.split("/") %}
+                <li><a href="{{ url_for('routes.rendered_path_view', subpath=component) }}">{{ parts | last }}</a></li>
+            {% endfor %}
+            </ul>
+            <h4>Standards</h4>
+            <ul>
+            {% for standard in project.standards %}
+                {% set parts = standard.split("/") %}
+                <li><a href="{{ url_for('routes.rendered_path_view', subpath=standard) }}">{{ parts | last }}</a></li>
+            {% endfor %}
+            </ul>
+            <h4>Components</h4>
+            <ul>
+            {% for certification in project.certifications %}
+                {% set parts = certification.split("/") %}
+                <li><a href="{{ url_for('routes.rendered_path_view', subpath=certification) }}">{{ parts | last }}</a></li>
+            {% endfor %}
+            </ul>
+        </div>
+        <div>
+            <articlce>
+                <header>Files</header>
+                <ul>
+                    <li><a href="{{ url_for('routes.page_docs_view', subpath="rendered/docs") }}">docs</a></li>
+                </ul>
+            </articlce>
+        </div>
+    </div>
 {% endblock %}

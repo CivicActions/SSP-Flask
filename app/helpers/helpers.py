@@ -83,15 +83,16 @@ def list_files(path: Path) -> list[str]:
     ]
 
 
-def create_breadcrumbs(path: Path, route: str) -> list[dict]:
+def create_breadcrumbs(path: Path, route: str, exclude_level: list = []) -> list[dict]:
     breadcrumbs: list = []
     path_parts = path.parts
     for i, crumb in enumerate(path_parts):
         breadcrumb_path = Path(*path.parts[: i + 1])
-        breadcrumbs.append(
-            {
-                "name": Path(crumb).name,
-                "path": url_for(route, subpath=breadcrumb_path.as_posix()),
-            }
-        )
+        if crumb not in exclude_level:
+            breadcrumbs.append(
+                {
+                    "name": Path(crumb).name,
+                    "path": url_for(route, subpath=breadcrumb_path.as_posix()),
+                }
+            )
     return breadcrumbs
