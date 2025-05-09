@@ -37,9 +37,12 @@
         </div>
         <div>
             <articlce>
-                <header>Files</header>
+                <h4>Generated Files & Templates</h4>
                 <ul>
-                    <li><a href="{{ url_for('routes.page_docs_view', subpath="rendered/docs") }}">docs</a></li>
+                    <li><a href="{{ url_for('routes.template_files') }}">Template Files</a></li>
+                    <li><a href="{{ url_for('routes.rendered_view') }}">Rendered Files</a></li>
+                    <li><a href="{{ url_for('routes.page_docs_view', subpath="rendered/docs") }}">Docs</a></li>
+                    <li><a href="{{ url_for('routes.page_docx_view', subpath="rendered/docx") }}">Docx</a></li>
                 </ul>
             </articlce>
         </div>

@@ -30,7 +30,7 @@ def test_toolkitconfig_check_config_values(app_context):
 def test_toolkitconfig_get_rendered_files(app_context):
     config: ToolkitConfig = ToolkitConfig()
     rendered_files = config.get_rendered_files()
-    assert len(rendered_files) == 2
+    assert len(rendered_files) == 6
 
 
 def test_toolkitconfig_get_template_files(app_context):
