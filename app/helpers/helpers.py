@@ -8,7 +8,7 @@ from pathlib import Path
 
 import markdown
 import yaml
-from flask import current_app, flash
+from flask import current_app, flash, url_for
 from loguru import logger
 
 
@@ -81,3 +81,17 @@ def list_files(path: Path) -> list[str]:
         for filepath in path.iterdir()
         if filepath.is_file()
     ]
+
+
+def create_breadcrumbs(path: Path, route: str) -> list[dict]:
+    breadcrumbs: list = []
+    path_parts = path.parts
+    for i, crumb in enumerate(path_parts):
+        breadcrumb_path = Path(*path.parts[: i + 1])
+        breadcrumbs.append(
+            {
+                "name": Path(crumb).name,
+                "path": url_for(route, subpath=breadcrumb_path.as_posix()),
+            }
+        )
+    return breadcrumbs
