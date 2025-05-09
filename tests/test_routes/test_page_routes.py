@@ -29,6 +29,16 @@ def test_page_docs_view(client):
     assert response.status_code == 200
 
 
-def test_page_docs_view_page(client):
+def test_page_docs_page_content(client):
     response = client.get("/docs/rendered/docs")
-    assert "<title>File Viewer | SSP Toolkit</title>" in response.text
+    assert '<h1 class="title">Docs</h1>' in response.text
+
+
+def test_page_docx_view(client):
+    response = client.get("/docx/rendered/docx")
+    assert response.status_code == 200
+
+
+def test_page_docx_page_content(client):
+    response = client.get("/docx/rendered/docx")
+    assert '<h1 class="title">Docx</h1>' in response.text
