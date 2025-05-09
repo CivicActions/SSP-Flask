@@ -64,3 +64,24 @@ def page_docs_view(subpath: str):
         "breadcrumbs": breadcrumbs,
     }
     return render_template("pages/file_viewer.html", **files)
+
+
+@bp.route("/docx/", defaults={"subpath": ""}, methods=["GET"])
+@bp.route("/docx/<path:subpath>")
+def page_docx_view(subpath: str):
+    ssp_base = get_ssp_root()
+    file_path = ssp_base.joinpath(subpath)
+    breadcrumbs = create_breadcrumbs(
+        Path(subpath), route="routes.page_docx_view", exclude_level=["rendered"]
+    )
+
+    directory_list = list_directories(path=file_path)
+    file_list = list_files(path=file_path)
+    directory: dict = {
+        "title": file_path.name.capitalize(),
+        "page_title": file_path.name.capitalize(),
+        "directories": directory_list,
+        "files": file_list,
+        "breadcrumbs": breadcrumbs,
+    }
+    return render_template("pages/docx_file_list.html", **directory)
