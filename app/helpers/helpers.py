@@ -5,6 +5,7 @@ directory of this distribution and at https://github.com/CivicActions/ssp-flask#
 
 import json
 from pathlib import Path
+from typing import List, Optional
 
 import markdown
 import yaml
@@ -33,7 +34,9 @@ def file_to_html(path: Path | str) -> str:
         logger.error(f"File { file.as_posix() } not found")
         flash(f"File { file.as_posix() } not found", "error")
     finally:
-        return file_content
+        pass
+
+    return file_content
 
 
 def yaml_to_html_list(data: dict | list) -> str:
@@ -65,7 +68,9 @@ def get_ssp_root() -> Path:
     return project_root.joinpath(ssp_base)
 
 
-def list_directories(path: Path, exclude: list = []) -> list[str]:
+def list_directories(path: Path, exclude: Optional[List[str]] = None) -> list[str]:
+    if exclude is None:
+        exclude = []
     ssp_base = get_ssp_root()
     return [
         directory.relative_to(ssp_base).as_posix()
@@ -83,7 +88,11 @@ def list_files(path: Path) -> list[str]:
     ]
 
 
-def create_breadcrumbs(path: Path, route: str, exclude_level: list = []) -> list[dict]:
+def create_breadcrumbs(
+    path: Path, route: str, exclude_level: Optional[List[str]] = None
+) -> list[dict]:
+    if exclude_level is None:
+        exclude_level = []
     breadcrumbs: list = []
     path_parts = path.parts
     for i, crumb in enumerate(path_parts):
