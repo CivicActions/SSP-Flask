@@ -5,7 +5,12 @@ directory of this distribution and at https://github.com/CivicActions/ssp-flask#
 
 from pathlib import Path
 
-from app.helpers.helpers import file_to_html, get_project_root, get_ssp_root
+from app.helpers.helpers import (
+    create_breadcrumbs,
+    file_to_html,
+    get_project_root,
+    get_ssp_root,
+)
 
 
 def test_get_project_root():
@@ -31,3 +36,17 @@ def test_file_to_html_md(app_context):
 def test_yaml_to_html_list(app_context):
     yaml_file = file_to_html("assets/test_yaml.yaml")
     assert "<ul id='yaml-list'>" in yaml_file
+
+
+def test_create_breadcrumbs(app_context):
+    file_path = Path("test/breadcrumbs/links")
+    breadcrumbs = create_breadcrumbs(file_path, "routes.rendered_path_view")
+    assert isinstance(breadcrumbs, list)
+
+
+def test_create_breadcrumb_routes(app_context, client):
+    file_path = Path("test/breadcrumbs/links")
+    breadcrumbs = create_breadcrumbs(file_path, "routes.rendered_path_view")
+    assert (
+        breadcrumbs[1].get("path") == "http://127.0.0.1:5000/rendered/test/breadcrumbs"
+    )

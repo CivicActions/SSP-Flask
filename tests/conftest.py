@@ -11,6 +11,9 @@ from app import create_app
 @pytest.fixture
 def app():
     app = create_app(config_name="testing")
+    app.config["SERVER_NAME"] = "127.0.0.1:5000"
+    app.config["APPLICATION_ROOT"] = "/"
+    app.config["PREFERRED_URL_SCHEME"] = "http"
     yield app
 
 
