@@ -139,13 +139,9 @@ def create_family(return_data: bool = False) -> dict:
     return families_data
 
 
-def main():
+def make_families():
     if not controls_dir.exists():
         print(f"Creating output directory {controls_dir.resolve(strict=False)}")
         controls_dir.mkdir(parents=True, exist_ok=False)
     create_family()
     print("Process complete.")
-
-
-if __name__ == "__main__":
-    main()

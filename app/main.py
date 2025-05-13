@@ -12,7 +12,7 @@ from loguru import logger
 
 from app.config import DevelopmentConfig, TestingConfig
 from app.helpers.helpers import get_project_root
-from app.routes import bp
+from app.routes.routes import bp
 
 app_path = get_project_root()
 

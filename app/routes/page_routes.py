@@ -15,7 +15,7 @@ from app.helpers.helpers import (
     list_directories,
     list_files,
 )
-from app.routes import bp
+from app.routes.routes import bp
 from app.ssp_tools.helpers.toolkitconfig import ToolkitConfig
 
 
