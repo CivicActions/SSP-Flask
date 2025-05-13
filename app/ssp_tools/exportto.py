@@ -41,7 +41,7 @@ def export_to(to_export: str | Path):
     if not export_file.parent.exists():
         export_file.parent.mkdir(exist_ok=False)
 
-    if ssp_root.joinpath(file_to_export).exists():
+    if file_to_export.exists():
         if file_to_export.is_dir():
             render_multiple(to_render=file_to_export, output_to=export_file)
         else:
