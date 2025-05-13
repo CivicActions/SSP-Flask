@@ -5,70 +5,47 @@ directory of this distribution and at https://github.com/CivicActions/ssp-flask#
 
 from pathlib import Path
 
-import click
+from flask import flash
+from loguru import logger
 from pypandoc import convert_file
 
+from app.helpers.helpers import get_ssp_root
 
-def render_multiple(to_render: Path, file_type: str, output_to: Path):
+
+def render_multiple(to_render: Path, output_to: Path):
     for file_path in to_render.glob("**/*.md"):
-        render_file(to_render=file_path, file_type=file_type, output_to=output_to)
+        render_file(to_render=file_path, output_to=output_to)
 
 
-def render_file(to_render: Path, file_type: str, output_to: Path):
+def render_file(to_render: Path, output_to: Path):
     args: list = []
-    filepath = output_to.joinpath(to_render.stem).with_suffix(f".{file_type}")
-    if file_type == "docx" and Path("assets/custom-reference.docx").exists():
+    if Path("assets/custom-reference.docx").exists():
         args.append("--reference-doc=assets/custom-reference.docx")
 
     convert_file(
         source_file=to_render,
-        to=file_type,
-        outputfile=str(filepath),
+        to="docx",
+        outputfile=str(output_to.with_suffix(".docx")),
         extra_args=args,
     )
-    print(f"Writing file {filepath.as_posix()}")
+    logger.info(f"Exporting file to {output_to.with_suffix('.docx').as_posix()}")
+    flash(f"Writing file {output_to.with_suffix('.docx').as_posix()}", "info")
 
 
-@click.command()
-@click.option(
-    "--render_file",
-    "-r",
-    "render",
-    type=click.Path(exists=True, dir_okay=True, file_okay=True, readable=True),
-    help="The directory containing the files, or a file, to render.",
-)
-@click.option(
-    "--type",
-    "-t",
-    "file_type",
-    required=False,
-    default="docx",
-    help="The file type to create using Pandoc (default: docx)",
-)
-@click.option(
-    "--out",
-    "-o",
-    "output",
-    type=click.Path(exists=False, dir_okay=True, readable=True),
-    default="docx",
-    help="Output directory (default: docx)",
-)
-def main(render: str, file_type: str, output: str):
-    output_to = Path(output)
-    if not output_to.exists():
-        output_to.mkdir(exist_ok=False)
+def export_to(to_export: str | Path):
+    ssp_root: Path = get_ssp_root()
+    file_base_path: tuple = Path(to_export).parts[1:]
+    file_to_export: Path = ssp_root.joinpath(to_export)
+    export_directory: Path = ssp_root.joinpath("rendered", "docx")
+    export_file = export_directory.joinpath(*file_base_path)
+    if not export_file.parent.exists():
+        export_file.parent.mkdir(exist_ok=False)
 
-    to_render = Path(render)
-    if to_render.exists():
-        if to_render.is_dir():
-            render_multiple(
-                to_render=to_render, file_type=file_type, output_to=output_to
-            )
+    if ssp_root.joinpath(file_to_export).exists():
+        if file_to_export.is_dir():
+            render_multiple(to_render=file_to_export, output_to=export_file)
         else:
-            render_file(to_render=to_render, file_type=file_type, output_to=output_to)
+            render_file(to_render=file_to_export, output_to=export_file)
     else:
-        raise FileNotFoundError
-
-
-if __name__ == "__main__":
-    main()
+        logger.error(f"Exportto: file not found: {FileNotFoundError}")
+        flash(f"Exportto: file not found: {to_export}", "error")
