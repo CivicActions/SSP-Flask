@@ -47,5 +47,5 @@ def export_to(to_export: str | Path):
         else:
             render_file(to_render=file_to_export, output_to=export_file)
     else:
-        logger.error(f"Exportto: file not found: {FileNotFoundError}")
+        logger.error(f"Exportto: file not found: {to_export}")
         flash(f"Exportto: file not found: {to_export}", "error")
