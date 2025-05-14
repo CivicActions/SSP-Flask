@@ -6,6 +6,7 @@ directory of this distribution and at https://github.com/CivicActions/ssp-flask#
 from pathlib import Path
 
 from flask import abort, flash, redirect, render_template, request, url_for
+from loguru import logger
 from ruamel.yaml import YAML, YAMLError
 
 from app.helpers.helpers import (
@@ -59,7 +60,11 @@ def template_path_view(subpath: str):
 @bp.route("/templates/edit/<path:subpath>")
 def template_edit_file(subpath: str):
     ssp_base: Path = get_ssp_root()
+    crumb_path: Path = Path(subpath)
     file_path: Path = ssp_base.joinpath(subpath)
+    breadcrumbs = create_breadcrumbs(
+        Path(*crumb_path.parts), "routes.template_path_view"
+    )
     if not file_path.exists():
         with open(file_path, "w") as f:
             f.write("# New YAML file\n")
@@ -67,9 +72,14 @@ def template_edit_file(subpath: str):
     with open(file_path, "r") as f:
         content = f.read()
 
-    return render_template(
-        "templates/template_editor.html", filename=subpath, content=content
-    )
+    page_data: dict = {
+        "title": "Edit Template",
+        "content": content,
+        "filename": subpath,
+        "breadcrumbs": breadcrumbs,
+    }
+
+    return render_template("templates/template_editor.html", **page_data)
 
 
 @bp.route("/templates/save", methods=["POST"])
@@ -81,11 +91,14 @@ def template_save_file():
         flash("Missing filename or content", "error")
         abort(400, description="Missing required file or content")
 
-    try:
-        yaml = YAML(typ="safe", pure=True)
-        yaml.load(content)
-    except YAMLError as e:
-        abort(400, description=f"Invalid YAML: {str(e)}")
+    if filename.endswith((".yaml", ".yml")):
+        try:
+            yaml = YAML(typ="safe", pure=True)
+            yaml.load(content)
+        except YAMLError as e:
+            flash("Invalid YAML", "error")
+            logger.error(f"Invalid YAML: {str(e)}")
+            abort(400, description=f"Invalid YAML: {str(e)}")
 
     ssp_base: Path = get_ssp_root()
     file_path: Path = ssp_base.joinpath(filename)

@@ -47,7 +47,7 @@
                         <a href="{{ url_for('routes.toolkit_render_files', subpath=file) }}">Render</a>
                     </td>
                     <td>
-                      Export
+                        <a href="{{ url_for('routes.toolkit_export_files', subpath=file) }}">Export</a>
                     </td>
                 </tr>
             {% endfor %}
