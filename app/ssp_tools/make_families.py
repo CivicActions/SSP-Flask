@@ -3,145 +3,94 @@ Copyright 2019-2025 CivicActions, Inc. See the README file at the top-level
 directory of this distribution and at https://github.com/CivicActions/ssp-flask#license.
 """
 
+from collections import defaultdict
 from pathlib import Path
-from typing import Generator
 
+from app.helpers.helpers import cached_file_loader
 from app.ssp_tools.family import Control, Family, Part
-from app.ssp_tools.helpers import ssptoolkit
 from app.ssp_tools.helpers.project import Project
+from app.ssp_tools.helpers.ssptoolkit import sortable_control_id
 
-project = Project()
-controls_dir = Path("docs/controls")
+ssp_base: Path
+project: Project
+output_dir: Path
+statuses: dict
 
 
-def get_control_parts(parts: list, control, parent: str) -> Control:
+def get_components(family: str):
+    for component in sorted(
+        ssp_base.joinpath("rendered", "components").rglob(f"**/{family}-*.yaml")
+    ):
+        yield component.parent.name, cached_file_loader(component)
+
+
+def get_statements(family: Family):
+    for name, component in get_components(family=family.family_id):
+        for narrative in component.get("satisfies", []):
+            key = sortable_control_id(narrative.get("control_key", ""))
+            if key in family.controls:
+                family.controls[key] = get_control_parts(
+                    parts=narrative.get("narrative"),
+                    control=family.controls[key],
+                    component=name,
+                )
+
+
+def get_control_parts(parts: list, control, component: str) -> Control:
     for p in parts:
         part_id = p.get("key", "_default")
         control.add_part(
             part_id,
             Part(
                 key=part_id,
-                party=parent,
+                party=component,
                 narrative=p.get("text"),
             ),
         )
     return control
 
 
-def get_controls(family: Family, standards: list) -> Family:
-    component_name = (
-        f"{family.family_id}-{family.family_name.replace(' ', '_').upper()}"
-    )
-    component_controls = project.sort_component_controls(component_name=component_name)
-    for key, control_id in project.controls[family.family_id].items():
-        standard = get_standard_by_control_id(
-            control_id=control_id, standards=standards
+def add_controls(family_id: str, family: dict) -> dict:
+    controls: dict = {}
+    for control_id, control in family.items():
+        control_data = project.get_standard(control)
+        controls[control_id] = Control(
+            control_id=control,
+            control_name=control_data.get("name", ""),
+            description=control_data.get("description", ""),
+            status=statuses.get(control, "incomplete"),
+            parts=defaultdict(),
         )
-        control = Control(
-            control_id=control_id,
-            control_name=standard.get("name"),
-            description=standard.get("description"),
-            status=standard.get("implementation_status", "incomplete"),
-            parts={},
+    return controls
+
+
+def create_families():
+    for family_id, family in project.controls.items():
+        controls = add_controls(family_id, family)
+        family_name = project.get_standard(family_id)
+        family_object = Family(
+            title=f"{family_id}: {family_name.get('name', '')}",
+            family_id=family_id,
+            family_name=family_name.get("name", ""),
+            controls=controls,
         )
-        if key in component_controls:
-            for parent, narrative, status, control_type in get_control_narratives(
-                component_controls.get(key, {})
-            ):
-                get_control_parts(parts=narrative, control=control, parent=parent)
-                update_status(control=control, status=status)
-                update_control_type(control=control, control_type=control_type)
-        family.add_control(cid=key, control=control)
-    return family
+        get_statements(family_object)
+        family_object.print_family_file(out_path=output_dir)
 
 
-def get_control_narratives(narratives: dict) -> Generator[tuple, None, None]:
-    for narrative in narratives:
-        key = list(narrative.keys())[0]
-        text = narrative[key]
-        yield key, text.get("narrative"), text.get("implementation_status"), text.get(
-            "security_control_type"
-        )
+def make_families(ssp_root: str | Path):
+    global ssp_base
+    ssp_base = Path(ssp_root) if isinstance(ssp_root, str) else ssp_root
 
+    global project
+    project = Project(ssp_root=ssp_root)
 
-def update_status(control: Control, status: str):
-    if not control.status:
-        control.status = status
-    elif control.status != "complete" and status == "complete":
-        control.status = status
-    else:
-        control.status = status
+    global statuses
+    statuses = cached_file_loader(ssp_base.joinpath("keys", "status.yaml"))
 
+    global output_dir
+    output_dir = ssp_base.joinpath("rendered", "docs", "controls")
+    if not output_dir.exists():
+        output_dir.mkdir(parents=True, exist_ok=True)
 
-def update_control_type(control: Control, control_type: str):
-    control.control_type = control_type
-
-
-def get_standard_by_control_id(control_id: str, standards: list) -> dict:
-    for standard in standards:
-        if control_id in standard:
-            return standard[control_id]
-    raise KeyError(f"{control_id} not found in standards.")
-
-
-def create_toc(out_path: str | Path, controls: dict):
-    toc_file = Path(out_path).parent.joinpath("controls").with_suffix(".md")
-    with open(toc_file, "w+") as fp:
-        for key, ctrl in controls.items():
-            url_path = f"{Path(out_path).parts[-1]}/{key.upper()}.md"
-            family_name = ctrl.get("name")
-            family_anchor = family_name.lower().replace(" ", "-")
-            fp.write(
-                f"* [{key}: {family_name.title()}]({url_path}#{key.lower()}-{family_anchor})\n"
-            )
-            for control in ctrl.get("controls"):
-                anchor = (
-                    control.lower()
-                    .replace("(", "")
-                    .replace(")", "")
-                    .replace(": ", "-")
-                    .replace(" ", "-")
-                )
-                fp.write(f"\t* [{control}]({url_path}#{anchor})\n")
-    print(f"TOC written to {toc_file.as_posix()}")
-
-
-def create_family(return_data: bool = False) -> dict:
-    title, standards = project.get_standards()
-    families = ssptoolkit.get_component_files(project.project.get_components())
-    toc: dict = {}
-    families_data: dict = {}
-    for key, family_files in families.items():
-        fid = key[:2]
-        family_name = ssptoolkit.get_standards_family_name(fid, standards)
-        family = get_controls(
-            family=Family(
-                title=title,
-                family_id=fid,
-                family_name=family_name,
-                controls={},
-            ),
-            standards=standards,
-        )
-        if return_data:
-            families_data[key] = family
-        else:
-            family.print_family_file(out_path=controls_dir)
-            toc[f"{fid}"] = {
-                "name": family_name,
-                "controls": [
-                    f"{c.control_id.upper()}: {c.control_name}"
-                    for _, c in family.controls.items()
-                ],
-            }
-    if not return_data:
-        create_toc(out_path=controls_dir, controls=toc)
-    return families_data
-
-
-def make_families():
-    if not controls_dir.exists():
-        print(f"Creating output directory {controls_dir.resolve(strict=False)}")
-        controls_dir.mkdir(parents=True, exist_ok=False)
-    create_family()
-    print("Process complete.")
+    create_families()

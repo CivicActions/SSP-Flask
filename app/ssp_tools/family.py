@@ -5,9 +5,9 @@ directory of this distribution and at https://github.com/CivicActions/ssp-flask#
 
 from collections import OrderedDict
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 def sort_by_keys(to_sort: dict) -> OrderedDict:
@@ -27,9 +27,9 @@ class Control(BaseModel):
     control_id: str
     control_name: str
     description: str
-    control_type: str | None
-    status: str | None
-    parts: Dict[str, List[Part]]
+    control_type: str | None = None
+    status: str | None = None
+    parts: Dict | None = Field(default={})
 
     def header(self) -> str:
         return f"### {self.control_id}: {self.control_name}\n\n"
@@ -41,11 +41,15 @@ class Control(BaseModel):
         return f"**Status:** {self.status}\n"
 
     def add_part(self, pid: str, part: Part):
+        if self.parts is None:
+            self.parts = {}
         if pid not in self.parts:
             self.parts[pid] = []
         self.parts[pid].append(part)
 
     def get_parts(self):
+        if self.parts is None:
+            self.parts = {}
         self.parts = sort_by_keys(self.parts)
         parts = ""
         for key, part in self.parts.items():
