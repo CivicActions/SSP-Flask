@@ -6,6 +6,8 @@ directory of this distribution and at https://github.com/CivicActions/ssp-flask#
 from collections import defaultdict
 from pathlib import Path
 
+from loguru import logger
+
 from app.helpers.helpers import cached_file_loader
 from app.ssp_tools.family import Control, Family, Part
 from app.ssp_tools.helpers.project import Project
@@ -76,6 +78,8 @@ def create_families():
         )
         get_statements(family_object)
         family_object.print_family_file(out_path=output_dir)
+
+    logger.info(f"Families files written to {output_dir.as_posix()}.")
 
 
 def make_families(ssp_root: str | Path):

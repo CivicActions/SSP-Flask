@@ -7,6 +7,7 @@ from collections import OrderedDict
 from pathlib import Path
 from typing import Dict
 
+from loguru import logger
 from pydantic import BaseModel, Field
 
 
@@ -88,4 +89,4 @@ class Family(BaseModel):
         with open(output, "w+") as ofp:
             ofp.write(content)
 
-        print(f"writing file {output.as_posix()}")
+        logger.info(f"writing file {output.as_posix()}")
