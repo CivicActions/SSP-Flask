@@ -6,6 +6,7 @@ directory of this distribution and at https://github.com/CivicActions/ssp-flask#
 from collections import defaultdict
 from pathlib import Path
 
+from flask import flash
 from loguru import logger
 
 from app.helpers.helpers import cached_file_loader
@@ -52,7 +53,7 @@ def get_control_parts(parts: list, control, component: str) -> Control:
     return control
 
 
-def add_controls(family_id: str, family: dict) -> dict:
+def add_controls(family: dict) -> dict:
     controls: dict = {}
     for control_id, control in family.items():
         control_data = project.get_standard(control)
@@ -68,7 +69,7 @@ def add_controls(family_id: str, family: dict) -> dict:
 
 def create_families():
     for family_id, family in project.controls.items():
-        controls = add_controls(family_id, family)
+        controls = add_controls(family)
         family_name = project.get_standard(family_id)
         family_object = Family(
             title=f"{family_id}: {family_name.get('name', '')}",
@@ -80,6 +81,7 @@ def create_families():
         family_object.print_family_file(out_path=output_dir)
 
     logger.info(f"Families files written to {output_dir.as_posix()}.")
+    flash(f"Families files written to {output_dir.as_posix()}.", "success")
 
 
 def make_families(ssp_root: str | Path):
