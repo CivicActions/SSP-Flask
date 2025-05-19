@@ -14,21 +14,16 @@ from app.ssp_tools.family import Control, Family, Part
 from app.ssp_tools.helpers.project import Project
 from app.ssp_tools.helpers.ssptoolkit import sortable_control_id
 
-ssp_base: Path
-project: Project
-output_dir: Path
-statuses: dict
 
-
-def get_components(family: str):
+def get_components(family: str, ssp_base: Path):
     for component in sorted(
         ssp_base.joinpath("rendered", "components").rglob(f"**/{family}-*.yaml")
     ):
         yield component.parent.name, cached_file_loader(component)
 
 
-def get_statements(family: Family):
-    for name, component in get_components(family=family.family_id):
+def get_statements(family: Family, ssp_base: Path):
+    for name, component in get_components(family=family.family_id, ssp_base=ssp_base):
         for narrative in component.get("satisfies", []):
             key = sortable_control_id(narrative.get("control_key", ""))
             if key in family.controls:
@@ -53,9 +48,12 @@ def get_control_parts(parts: list, control, component: str) -> Control:
     return control
 
 
-def add_controls(family: dict) -> dict:
+def add_controls(
+    family_controls: dict, project: Project, ssp_base: Path
+) -> dict[str, Control]:
+    statuses = cached_file_loader(ssp_base.joinpath("keys", "status.yaml"))
     controls: dict = {}
-    for control_id, control in family.items():
+    for control_id, control in family_controls.items():
         control_data = project.get_standard(control)
         controls[control_id] = Control(
             control_id=control,
@@ -67,9 +65,12 @@ def add_controls(family: dict) -> dict:
     return controls
 
 
-def create_families():
+def create_families(project: Project, ssp_base: Path):
+    output_dir = ssp_base.joinpath("rendered", "docs", "controls")
     for family_id, family in project.controls.items():
-        controls = add_controls(family)
+        controls = add_controls(
+            family_controls=family, project=project, ssp_base=ssp_base
+        )
         family_name = project.get_standard(family_id)
         family_object = Family(
             title=f"{family_id}: {family_name.get('name', '')}",
@@ -77,7 +78,9 @@ def create_families():
             family_name=family_name.get("name", ""),
             controls=controls,
         )
-        get_statements(family_object)
+        get_statements(family=family_object, ssp_base=ssp_base)
+        if not output_dir.exists():
+            output_dir.mkdir(parents=True, exist_ok=True)
         family_object.print_family_file(out_path=output_dir)
 
     logger.info(f"Families files written to {output_dir.as_posix()}.")
@@ -85,18 +88,6 @@ def create_families():
 
 
 def make_families(ssp_root: str | Path):
-    global ssp_base
     ssp_base = Path(ssp_root) if isinstance(ssp_root, str) else ssp_root
-
-    global project
     project = Project(ssp_root=ssp_root)
-
-    global statuses
-    statuses = cached_file_loader(ssp_base.joinpath("keys", "status.yaml"))
-
-    global output_dir
-    output_dir = ssp_base.joinpath("rendered", "docs", "controls")
-    if not output_dir.exists():
-        output_dir.mkdir(parents=True, exist_ok=True)
-
-    create_families()
+    create_families(project=project, ssp_base=ssp_base)
