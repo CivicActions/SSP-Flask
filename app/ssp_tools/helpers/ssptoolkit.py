@@ -13,7 +13,6 @@ import yaml
 
 from app.helpers.helpers import get_ssp_root
 from app.ssp_tools.helpers import secrender
-from app.ssp_tools.helpers.opencontrol import OpenControl
 from app.ssp_tools.helpers.toolkitconfig import ToolkitConfig
 
 
@@ -42,65 +41,6 @@ def to_oc_control_id(control_id: str) -> str:
         return f"{family}-{number} ({extension})"
 
     return control_id
-
-
-def get_project() -> OpenControl:
-    ssp_root = get_ssp_root()
-    oc_file = ssp_root.joinpath("opencontrol").with_suffix(".yaml")
-    if oc_file.is_file():
-        project = OpenControl.load(oc_file.as_posix())
-    else:
-        raise FileNotFoundError("Could not find opencontrol.yaml file.")
-    return project
-
-
-def get_certification_baseline() -> list:
-    project = get_project()
-    certifications: list = []
-    ssp_root = get_ssp_root()
-    for certs in project.certifications:
-        try:
-            with open(ssp_root.joinpath(certs), "r") as s:
-                certifications.append(yaml.load(s, Loader=yaml.SafeLoader))
-        except FileNotFoundError as error:
-            raise error
-
-    controls: list = []
-    for standards in certifications:
-        for _, control_ids in standards.get("standards").items():
-            controls.extend(control_ids.keys())
-
-    return list(dict.fromkeys(controls))
-
-
-def get_standards() -> tuple:
-    project = get_project()
-    ssp_root = get_ssp_root()
-    standards: list = []
-    for standard in project.standards:
-        try:
-            with open(ssp_root.joinpath(standard), "r") as s:
-                standards_list = yaml.load(s, Loader=yaml.SafeLoader)
-        except FileNotFoundError as error:
-            raise error
-        standards.append(standards_list)
-
-    title = project.metadata.description  # type: ignore[union-attr]
-    return title, standards
-
-
-def get_standards_control_data(control: str, standards: list) -> dict:
-    for s in standards:
-        if control_data := s.get(control):
-            return control_data
-    raise KeyError(f"Control {control} not found.")
-
-
-def get_standards_family_name(family: str, standards: list) -> str:
-    for s in standards:
-        if control_data := s.get(family, None):
-            return control_data.get("name")
-    raise KeyError(f"Control {family} not found.")
 
 
 def get_component_files(components: list) -> dict:

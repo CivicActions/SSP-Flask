@@ -61,20 +61,24 @@ class ImplementationStatusEnum(str, Enum):
 
 class CoveredBy(OpenControlElement):
     verification_key: str
-    system_key: Optional[str] = Field(default=None)
-    component_key: Optional[str] = Field(default=None)
+    system_key: str | None = None
+    component_key: str | None = None
 
 
 class Control(OpenControlElement):
     control_key: str
     standard_key: str
-    covered_by: Optional[List[CoveredBy]] = Field(default=[])
-    narrative: Optional[List[Statement]] = Field(default=[])
-    references: Optional[List[Reference]] = Field(default=[])
-    implementation_statuses: Optional[Set[ImplementationStatusEnum]]
-    control_origins: Optional[List[str]] = Field(default=[])
-    parameters: Optional[List[Parameter]] = Field(default=[])
+    covered_by: List[CoveredBy] | None = Field(default=[])
+    narrative: List[Statement] = Field(default=[])
+    references: List[Reference] | None = Field(default=[])
+    implementation_statuses: Set[ImplementationStatusEnum] | None = Field(default=None)
+    control_origins: List[str] | None = Field(default=[])
+    parameters: List[Parameter] | None = Field(default=[])
     _file: str = PrivateAttr()
+
+    def get_narratives(self):
+        for narrative in self.narrative:
+            yield narrative
 
 
 class Metadata(OpenControlElement):
@@ -95,18 +99,22 @@ class Verification(OpenControlElement):
 class Component(OpenControlElement):
     schema_version: str = COMPONENT_SCHEMA_VERSION
     name: str
-    key: Optional[str] = Field(default=None)
-    system: Optional[str] = Field(default=None)
-    documentation_complete: Optional[bool] = Field(default=None)
-    responsible_role: Optional[str] = Field(default=None)
-    references: Optional[List[Reference]] = Field(default=[])
-    verifications: Optional[List[Verification]] = Field(default=[])
-    satisfies: Optional[List[Control]] = Field(default=[])
+    key: str | None = Field(default=None)
+    system: str | None = Field(default=None)
+    documentation_complete: bool | None = Field(default=None)
+    responsible_role: str | None = Field(default=None)
+    references: List[Reference] | None = Field(default=[])
+    verifications: List[Verification] | None = Field(default=[])
+    satisfies: List[Control] = Field(default=[])
 
     _file: str = PrivateAttr()
 
     def new_relative_path(self):
         return Path("components") / Path(self.name) / Path("component.yaml")
+
+    def get_controls(self):
+        for control in self.satisfies:
+            yield control
 
 
 class StandardControl(OpenControlElement):
@@ -117,8 +125,8 @@ class StandardControl(OpenControlElement):
 
 class Standard(OpenControlElement):
     name: str
-    license: Optional[str] = Field(default=None)
-    source: Optional[str] = Field(default=None)
+    license: str | None = None
+    source: str | None = None
     controls: Dict[str, StandardControl]
     _file: str = PrivateAttr()
 
@@ -148,13 +156,13 @@ class System(OpenControlElement):
 class Dependency(OpenControlElement):
     url: str
     revision: str
-    contextdir: Optional[str] = Field(default=None)
+    contextdir: str | None = Field(default=None)
 
 
 class Dependencies(OpenControlElement):
-    certifications: Optional[List[Dependency]] = Field(default=[])
-    standards: Optional[List[Dependency]] = Field(default=None)
-    systems: Optional[List[Dependency]] = Field(default=None)
+    certifications: List[Dependency] | None = Field(default=[])
+    standards: List[Dependency] | None = Field(default=[])
+    systems: List[Dependency] | None = Field(default=[])
 
 
 class OpenControl(OpenControlElement):
@@ -165,10 +173,10 @@ class OpenControl(OpenControlElement):
     schema_version: str = OPENCONTROL_SCHEMA_VERSION
     name: str
     metadata: Optional[Metadata]
-    components: List[str] = Field(default=None)
-    standards: List[str] = Field(default=None)
-    certifications: List[str] = Field(default=None)
-    dependencies: Optional[Dependencies] = Field(default=None)
+    components: List[str] = Field(default=[])
+    standards: List[str] = Field(default=[])
+    certifications: List[str] = Field(default=[])
+    dependencies: Dependencies | None = None
 
     _root_dir: str = PrivateAttr()
 
@@ -261,7 +269,7 @@ class OpenControl(OpenControlElement):
 class FenComponent(BaseModel):
     schema_version: str
     name: str
-    satisfies: Optional[List[str]]
+    satisfies: List[str] | None = Field(default=[])
 
 
 class FenFamily(BaseModel):
@@ -273,11 +281,11 @@ class FenFamily(BaseModel):
 class OpenControlYaml(BaseModel):
     schema_version: str
     name: str
-    metadata: Optional[Metadata]
-    components: Optional[List[str]]
-    certifications: List[str] = []
-    standards: List[str] = []
-    systems: Optional[List[str]]
+    metadata: Metadata | None = None
+    components: List[str] | None = Field(default=[])
+    certifications: List[str] = Field(default=[])
+    standards: List[str] = Field(default=[])
+    systems: List[str] | None = None
     dependencies: Optional[Dict[str, List[Dependency]]]
 
     @staticmethod

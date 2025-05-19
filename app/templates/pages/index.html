@@ -5,38 +5,54 @@
 
 {% block content %}
     <h2>{{ project.metadata.description }}</h2>
-    <h3>Maintainers</h3>
     <div class="grid">
         <div>
-            <ul>
-            {% for maintainer in project.metadata.maintainers %}
-                <li>{{ maintainer }}</li>
-            {% endfor %}
-            </ul>
-            <h4>Components</h4>
-            <ul>
-            {% for component in project.components %}
-                {% set parts = component.split("/") %}
-                <li><a href="{{ url_for('routes.rendered_path_view', subpath=component) }}">{{ parts | last }}</a></li>
-            {% endfor %}
-            </ul>
-            <h4>Standards</h4>
-            <ul>
-            {% for standard in project.standards %}
-                {% set parts = standard.split("/") %}
-                <li><a href="{{ url_for('routes.rendered_path_view', subpath=standard) }}">{{ parts | last }}</a></li>
-            {% endfor %}
-            </ul>
-            <h4>Components</h4>
-            <ul>
-            {% for certification in project.certifications %}
-                {% set parts = certification.split("/") %}
-                <li><a href="{{ url_for('routes.rendered_path_view', subpath=certification) }}">{{ parts | last }}</a></li>
-            {% endfor %}
-            </ul>
+            <h3>OpenControl</h3>
+            <article>
+                <h4>Maintainers</h4>
+                <ul>
+                {% for maintainer in project.metadata.maintainers %}
+                    <li>{{ maintainer }}</li>
+                {% endfor %}
+                </ul>
+            </article>
+            <article>
+                <h4>Components</h4>
+                <ul>
+                {% for component in project.components %}
+                    {% set parts = component.split("/") %}
+                    <li><a href="{{ url_for('routes.rendered_path_view', subpath=component) }}">{{ parts | last }}</a></li>
+                {% endfor %}
+                </ul>
+            </article>
+            <article>
+                <h4>Standards</h4>
+                <ul>
+                {% for standard in project.standards %}
+                    {% set parts = standard.split("/") %}
+                    <li><a href="{{ url_for('routes.rendered_path_view', subpath=standard) }}">{{ parts | last }}</a></li>
+                {% endfor %}
+                </ul>
+            </article>
+            <article>
+                <h4>Components</h4>
+                <ul>
+                {% for certification in project.certifications %}
+                    {% set parts = certification.split("/") %}
+                    <li><a href="{{ url_for('routes.rendered_path_view', subpath=certification) }}">{{ parts | last }}</a></li>
+                {% endfor %}
+                </ul>
+            </article>
         </div>
         <div>
-            <articlce>
+            <h3>Actions</h3>
+            <article>
+                <h4>Bulk Actions</h4>
+                <ul>
+                    <li><a href="{{ url_for('routes.toolkit_make_families') }}">Create Family files</a></li>
+                </ul>
+            </article>
+            <article>
                 <h4>Generated Files & Templates</h4>
                 <ul>
                     <li><a href="{{ url_for('routes.template_files') }}">Template Files</a></li>
@@ -44,7 +60,7 @@
                     <li><a href="{{ url_for('routes.page_docs_view', subpath="rendered/docs") }}">Docs</a></li>
                     <li><a href="{{ url_for('routes.page_docx_view', subpath="rendered/docx") }}">Docx</a></li>
                 </ul>
-            </articlce>
+            </article>
         </div>
     </div>
 {% endblock %}

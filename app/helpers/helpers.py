@@ -4,13 +4,14 @@ directory of this distribution and at https://github.com/CivicActions/ssp-flask#
 """
 
 import json
+from functools import lru_cache
 from pathlib import Path
 from typing import List, Optional
 
 import markdown
-import yaml
 from flask import current_app, flash, url_for
 from loguru import logger
+from ruamel.yaml import YAML
 
 
 def file_to_html(path: Path | str) -> str:
@@ -23,7 +24,8 @@ def file_to_html(path: Path | str) -> str:
     try:
         with open(file, "r") as fp:
             if file.suffix == ".yaml":
-                file_content = yaml_to_html_list(yaml.safe_load(fp))
+                yaml = YAML(typ="safe", pure=True)
+                file_content = yaml_to_html_list(yaml.load(fp))
             elif file.suffix == ".md" or file.suffix == ".j2":
                 file_content = markdown.markdown(fp.read())
             elif file.suffix == ".json":
@@ -51,6 +53,41 @@ def yaml_to_html_list(data: dict | list) -> str:
         html += str(data)
     html += "</ul>"
     return html
+
+
+@lru_cache(maxsize=128)
+def cached_file_loader(filepath: Path | str):
+    file_path = Path(filepath) if isinstance(filepath, str) else filepath
+    if file_path.suffix == ".yaml" or file_path.suffix == ".yml":
+        return load_yaml_files(file_path)
+    elif file_path.suffix == ".json":
+        import json
+
+        with open(file_path, "r") as f:
+            return json.load(f)
+    else:
+        with open(file_path, "r") as f:
+            return f.read()
+
+
+def load_yaml_files(file_path: str | Path) -> dict:
+    load_file = Path(file_path) if isinstance(file_path, str) else file_path
+    try:
+        with open(load_file, "r") as fp:
+            yaml = YAML(typ="safe", pure=True)
+            project = yaml.load(fp)
+            return project
+    except FileNotFoundError:
+        logger.error(f"No {load_file.name} found in {load_file.parent.as_posix()}.")
+        flash(f"No {load_file.name} found in {load_file.parent.as_posix()}.", "error")
+        return {}
+
+
+def write_files(file_path: str | Path, content: str):
+    write_file = Path(file_path) if isinstance(file_path, str) else file_path
+    logger.info(f"Writing {write_file.as_posix()}")
+    with open(write_file, "w+") as fp:
+        fp.write(content)
 
 
 def get_project_root():
