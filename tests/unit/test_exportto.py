@@ -7,21 +7,27 @@ from app.ssp_tools.exportto import export_to, render_file, render_multiple
 
 class TestExportTo(unittest.TestCase):
 
+    @patch("app.ssp_tools.exportto.get_ssp_root")
     @patch("app.ssp_tools.exportto.convert_file")
     @patch("app.ssp_tools.exportto.flash")
     @patch("app.ssp_tools.exportto.Path")
-    def test_render_file(self, mock_path, mock_flash, mock_convert_file):
+    def test_render_file(
+        self, mock_path, mock_flash, mock_convert_file, mock_get_ssp_root
+    ):
         mock_path.return_value.exists.return_value = True
         to_render = Path("/fake/path/file.md")
         output_to = Path("/fake/output/file")
 
-        render_file(to_render=to_render, output_to=output_to)
+        render_file(
+            to_render=to_render, output_to=output_to, ssp_root=mock_get_ssp_root
+        )
 
         mock_convert_file.assert_called_once()
         mock_flash.assert_called_once()
 
+    @patch("app.ssp_tools.exportto.get_ssp_root")
     @patch("app.ssp_tools.exportto.render_file")
-    def test_render_multiple(self, mock_render_file):
+    def test_render_multiple(self, mock_render_file, mock_get_ssp_root):
         to_render = MagicMock()
         to_render.glob.return_value = [
             Path("/fake/path/file1.md"),
@@ -29,7 +35,9 @@ class TestExportTo(unittest.TestCase):
         ]
         output_to = Path("/fake/output")
 
-        render_multiple(to_render=to_render, output_to=output_to)
+        render_multiple(
+            to_render=to_render, output_to=output_to, ssp_root=mock_get_ssp_root
+        )
 
         self.assertEqual(mock_render_file.call_count, 2)
 
