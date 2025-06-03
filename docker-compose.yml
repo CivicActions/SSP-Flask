@@ -1,5 +1,4 @@
-version: '3.9'
-
+---
 services:
   web:
     build: .
@@ -10,7 +9,8 @@ services:
       - ./ssp:/app/ssp
       - ./pyproject.toml:/app/pyproject.toml
       - ./uv.lock:/app/uv.lock
-      - ./.env:/app/.env
+    env_file:
+      - .env
     environment:
       - FLASK_APP=app
       - FLASK_ENV=development
