@@ -18,6 +18,8 @@ services:
     restart: unless-stopped
     networks:
       - ssp-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
 networks:
   ssp-network:
