@@ -12,15 +12,16 @@ from pypandoc import convert_file
 from app.helpers.helpers import get_ssp_root
 
 
-def render_multiple(to_render: Path, output_to: Path):
+def render_multiple(to_render: Path, output_to: Path, ssp_root: Path):
     for file_path in to_render.glob("**/*.md"):
-        render_file(to_render=file_path, output_to=output_to)
+        render_file(to_render=file_path, output_to=output_to, ssp_root=ssp_root)
 
 
-def render_file(to_render: Path, output_to: Path):
+def render_file(to_render: Path, output_to: Path, ssp_root: Path):
     args: list = []
-    if Path("assets/custom-reference.docx").exists():
-        args.append("--reference-doc=assets/custom-reference.docx")
+    custom_reference: Path = ssp_root.joinpath("assets/custom-reference.docx")
+    if custom_reference.exists():
+        args.append(f"--reference-doc={custom_reference.as_posix()}")
 
     convert_file(
         source_file=to_render,
@@ -43,9 +44,13 @@ def export_to(to_export: str | Path):
 
     if file_to_export.exists():
         if file_to_export.is_dir():
-            render_multiple(to_render=file_to_export, output_to=export_file)
+            render_multiple(
+                to_render=file_to_export, output_to=export_file, ssp_root=ssp_root
+            )
         else:
-            render_file(to_render=file_to_export, output_to=export_file)
+            render_file(
+                to_render=file_to_export, output_to=export_file, ssp_root=ssp_root
+            )
     else:
         logger.error(f"Exportto: file not found: {to_export}")
         flash(f"Exportto: file not found: {to_export}", "error")
