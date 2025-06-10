@@ -85,6 +85,8 @@ def load_yaml_files(file_path: str | Path) -> dict:
 
 def write_files(file_path: str | Path, content: str):
     write_file = Path(file_path) if isinstance(file_path, str) else file_path
+    if not write_file.parent.exists():
+        write_file.parent.mkdir(parents=True)
     logger.info(f"Writing {write_file.as_posix()}")
     with open(write_file, "w+") as fp:
         fp.write(content)

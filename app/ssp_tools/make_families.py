@@ -65,8 +65,9 @@ def add_controls(
     return controls
 
 
-def create_families(project: Project, ssp_base: Path):
+def create_families(project: Project, ssp_base: Path) -> list[Family | None]:
     output_dir = ssp_base.joinpath("rendered", "docs", "controls")
+    family_data: list = []
     for family_id, family in project.controls.items():
         controls = add_controls(
             family_controls=family, project=project, ssp_base=ssp_base
@@ -79,15 +80,16 @@ def create_families(project: Project, ssp_base: Path):
             controls=controls,
         )
         get_statements(family=family_object, ssp_base=ssp_base)
-        if not output_dir.exists():
-            output_dir.mkdir(parents=True, exist_ok=True)
         family_object.print_family_file(out_path=output_dir)
+        family_data.append(family_object)
 
     logger.info(f"Families files written to {output_dir.as_posix()}.")
     flash(f"Families files written to {output_dir.as_posix()}.", "success")
+    return family_data
 
 
-def make_families(ssp_root: str | Path):
+def make_families(ssp_root: str | Path) -> list[Family | None]:
     ssp_base = Path(ssp_root) if isinstance(ssp_root, str) else ssp_root
     project = Project(ssp_root=ssp_root)
-    create_families(project=project, ssp_base=ssp_base)
+    families = create_families(project=project, ssp_base=ssp_base)
+    return families

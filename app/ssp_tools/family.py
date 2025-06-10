@@ -7,8 +7,9 @@ from collections import OrderedDict
 from pathlib import Path
 from typing import Dict
 
-from loguru import logger
 from pydantic import BaseModel, Field
+
+from app.helpers.helpers import write_files
 
 
 def sort_by_keys(to_sort: dict) -> OrderedDict:
@@ -86,7 +87,4 @@ class Family(BaseModel):
         self.controls = sort_by_keys(self.controls)
         content = self.header() + self.get_controls()
         output = Path(out_path).joinpath(self.family_id).with_suffix(".md")
-        with open(output, "w+") as ofp:
-            ofp.write(content)
-
-        logger.info(f"writing file {output.as_posix()}")
+        write_files(file_path=output, content=content)
