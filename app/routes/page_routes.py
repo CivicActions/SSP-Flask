@@ -50,7 +50,7 @@ def page_docs_view(subpath: str):
             "title": file_path.name.capitalize(),
             "page_title": file_path.name.capitalize(),
             "directories": directory_list,
-            "files": file_list,
+            "files": sorted(file_list),
             "breadcrumbs": breadcrumbs,
         }
         return render_template("pages/docs_file_list.html", **directory)
@@ -81,7 +81,7 @@ def page_docx_view(subpath: str):
         "title": file_path.name.capitalize(),
         "page_title": file_path.name.capitalize(),
         "directories": directory_list,
-        "files": file_list,
+        "files": sorted(file_list),
         "breadcrumbs": breadcrumbs,
     }
     return render_template("pages/docx_file_list.html", **directory)

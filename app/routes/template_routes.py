@@ -28,8 +28,8 @@ def template_files():
     templates: dict = {
         "title": "Templates",
         "page_title": "Templates",
-        "directories": directory_list,
-        "files": file_list,
+        "directories": sorted(directory_list),
+        "files": sorted(file_list),
         "breadcrumbs": create_breadcrumbs(Path("templates"), "routes.template_files"),
     }
     return render_template("templates/template_file_list.html", **templates)
@@ -47,8 +47,8 @@ def template_path_view(subpath: str):
         directory: dict = {
             "title": file_path.name.capitalize(),
             "page_title": file_path.name.capitalize(),
-            "directories": directory_list,
-            "files": file_list,
+            "directories": sorted(directory_list),
+            "files": sorted(file_list),
             "breadcrumbs": breadcrumbs,
         }
         return render_template("templates/template_file_list.html", **directory)
