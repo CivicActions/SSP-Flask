@@ -35,9 +35,7 @@ def get_standards(project: Project, ssp_base: Path) -> list:
 def get_controls(control: Control) -> list:
     control_text: list = [
         f"#### {control.control_id}: {control.control_name}",
-        "```text",
-        control.description,
-        "```",
+        f"\n\n```\n{control.description}\n```",
         f"**Status:** {control.status}",
     ]
     if control.parts:
@@ -71,7 +69,7 @@ def write_ssp(ssp_data: Ssp, project: Project, ssp_base: Path):
             control_text = get_controls(control)
             text_output.extend(control_text)
     ssp_file = ssp_base.joinpath("rendered", "docs", "ssp").with_suffix(".md")
-    write_files(ssp_file, "\n".join(text_output))
+    write_files(ssp_file, "\n\n".join(text_output))
     find_toc_tag(file=str(ssp_file.as_posix()), levels=3)
     flash(f"{ssp_file.name} written to {ssp_file.parent.as_posix()}", "success")
     logger.info(f"{ssp_file.name} written to {ssp_file.parent.as_posix()}")

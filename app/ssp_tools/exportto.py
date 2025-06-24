@@ -34,13 +34,11 @@ def render_file(to_render: Path, output_to: Path, ssp_root: Path):
 
 
 def export_to(to_export: str | Path):
+    export_file: Path = Path(to_export) if isinstance(to_export, str) else to_export
     ssp_root: Path = get_ssp_root()
-    file_base_path: tuple = Path(to_export).parts[1:]
     file_to_export: Path = ssp_root.joinpath(to_export)
     export_directory: Path = ssp_root.joinpath("rendered", "docx")
-    export_file = export_directory.joinpath(*file_base_path)
-    if not export_file.parent.exists():
-        export_file.parent.mkdir(exist_ok=False)
+    export_file = export_directory.joinpath(export_file.name)
 
     if file_to_export.exists():
         if file_to_export.is_dir():
