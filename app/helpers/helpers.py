@@ -3,6 +3,7 @@ Copyright 2019-2025 CivicActions, Inc. See the README file at the top-level
 directory of this distribution and at https://github.com/CivicActions/ssp-flask#license.
 """
 
+import hashlib
 import json
 from functools import lru_cache
 from pathlib import Path
@@ -149,3 +150,15 @@ def create_breadcrumbs(
                 }
             )
     return breadcrumbs
+
+
+def get_hash(path: str) -> str:
+    BUF_SIZE = 65536
+    sha_hash = hashlib.sha256()
+    with open(Path(path), "rb") as f:
+        while True:
+            file = f.read(BUF_SIZE)
+            if not file:
+                break
+            sha_hash.update(file)
+    return sha_hash.hexdigest()

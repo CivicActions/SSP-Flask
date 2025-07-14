@@ -12,16 +12,12 @@ from datetime import date
 from io import StringIO
 from pathlib import Path
 
-import click
+from flask import flash
+from loguru import logger
 
-from app.ssp_tools.helpers.hash_checker import FileChecker
-from app.ssp_tools.helpers.ssptoolkit import (
-    load_template_args,
-    load_yaml_files,
-    write_toc,
-)
-
-hashes = FileChecker()
+from app.helpers.hash_checker import FileChecker
+from app.helpers.helpers import load_yaml_files
+from app.ssp_tools.helpers.ssptoolkit import load_template_args, write_toc
 
 
 @dataclass
@@ -38,10 +34,10 @@ class SopWriter:
         """
         try:
             self.output_file = StringIO()
-            self.__write_header()
-            self.__write_purpose()
-            self.__write_scope()
-            self.__write_controls()
+            self.__add_header()
+            self.__add_purpose()
+            self.__add_scope()
+            self.__add_controls()
             self.__write_file()
         finally:
             self.output_file.close()
@@ -50,12 +46,17 @@ class SopWriter:
         """
         Write the file with the table of contents to the filesystem.
         """
-        print(f"Writing file to {self.filepath}")
-        with open(self.filepath, "w+") as md:
-            print(self.output_file.getvalue(), file=md)
-        write_toc(self.filepath, levels=3)
+        try:
+            with open(self.filepath, "w+") as md:
+                print(self.output_file.getvalue(), file=md)
+            write_toc(self.filepath, levels=3)
+            logger.error(f"Writing SOP {self.filepath}")
+            flash(f"Writing SOP {self.filepath}", "success")
+        except FileNotFoundError:
+            logger.error(f"File {self.filepath} not found")
+            flash(f"File {self.filepath} not found", "error")
 
-    def __write_header(self):
+    def __add_header(self):
         """
         Add the page header with generation date and TOC placeholder.
         """
@@ -66,31 +67,31 @@ class SopWriter:
         self.output_file.write("\n<!--TOC-->\n\n----\n\n")
         self.output_file.write("## Introduction\n\n")
 
-    def __write_purpose(self):
+    def __add_purpose(self):
         self.output_file.write("### Purpose\n\n")
         self.output_file.write(
             self.config.get("sop").get(self.family).get("purpose")  # type: ignore[union-attr]
         )
         self.output_file.write("\n\n")
 
-    def __write_scope(self):
+    def __add_scope(self):
         self.output_file.write("### Scope\n\n")
         self.output_file.write(
             self.config.get("sop").get(self.family).get("scope")  # type: ignore[union-attr]
         )
         self.output_file.write("\n\n")
 
-    def __write_controls(self):
+    def __add_controls(self):
         """
         Write the controls to the file stream.
         """
         self.output_file.write("## Standards\n\n")
         for control_id, control in self.controls.items():
             self.output_file.write(f"### {control_id}\n\n")
-            self.__write_text(control)
-            self.__write_parts(control)
+            self.__add_text(control)
+            self.__add_parts(control)
 
-    def __write_text(self, control: dict):
+    def __add_text(self, control: dict):
         """
         Write the non-parts control narrative text.
 
@@ -101,7 +102,7 @@ class SopWriter:
             prose = "\n\n".join(text)
             self.output_file.write(f"{prose}\n\n")
 
-    def __write_parts(self, control: dict):
+    def __add_parts(self, control: dict):
         """
         Write the control parts narrative text.
 
@@ -113,11 +114,12 @@ class SopWriter:
                 self.output_file.write(f"**{part}.**\t{prose}\n")
 
 
-def aggregate_control_data(component_dir: Path) -> dict:
+def aggregate_control_data(component_dir: Path, hashes: FileChecker) -> dict:
     """
     Collect all the rendered Components YAML files and aggregate them by family.
 
     :param component_dir: a pathlib object file path object.
+    :param hashes: FileChecker object for checking the hash values of the files.
     :return: a dictionary with all the Controls sorted by Family.
     """
     families: dict = {}
@@ -129,16 +131,16 @@ def aggregate_control_data(component_dir: Path) -> dict:
         and comp_file.name not in ["component.yaml", "file_hashes.json"]
     ]
 
-    for template in templates:
-        family = template.stem.lower().replace("_", "-")
+    for template_path in templates:
+        family = template_path.stem.lower().replace("_", "-")
         if family not in families:
             families[family] = {"has_changes": False}
 
-        has_changes = hashes.has_changed(template.as_posix())
+        has_changes = hashes.has_changed(template_path.as_posix())
         if not families[family]["has_changes"] and has_changes:
             families[family]["has_changes"] = True
 
-        component = load_yaml_files(template)
+        component = load_yaml_files(template_path)
         satisfies = component.get("satisfies", {})
         for control in satisfies:
             control_id = control.get("control_key")
@@ -159,12 +161,14 @@ def aggregate_control_data(component_dir: Path) -> dict:
                 families[family][key][part].append(parts.get("text"))
 
     write_families: dict = {}
-    for f, v in families.items():
-        if v.get("has_changes", False):
-            del v["has_changes"]
-            write_families[f] = v
+    for field, value in families.items():
+        if value.get("has_changes", False):
+            del value["has_changes"]
+            write_families[field] = value
     sort_controls(write_families)
     sort_parts(write_families)
+    if not write_families:
+        flash("All SOPs are up to date.", "info")
     return write_families
 
 
@@ -234,36 +238,15 @@ def sort_controls(families: dict) -> dict:
     return families
 
 
-@click.command()
-@click.option(
-    "--components",
-    "-c",
-    "components_dir",
-    required=False,
-    default="components/",
-    type=click.Path(exists=True, dir_okay=True, file_okay=False),
-    help="Rendered components directory",
-)
-@click.option(
-    "--out",
-    "-o",
-    "output_dir",
-    type=click.Path(exists=False, dir_okay=True, readable=True),
-    default="docs/",
-    help="Output directory (default: docs/)",
-)
-def main(components_dir: str, output_dir: str):
-    out_dir = Path(output_dir).joinpath("sop")
+def make_sops(ssp_root: str | Path):
+    ssp_base = Path(ssp_root) if isinstance(ssp_root, str) else ssp_root
+    out_dir = ssp_base.joinpath("rendered", "docs", "sop")
     config = load_template_args()
 
-    rendered_components = Path(components_dir)
+    rendered_components = ssp_base.joinpath("rendered", "components")
+    hashes = FileChecker(ssp_root=ssp_base)
+    families = aggregate_control_data(component_dir=rendered_components, hashes=hashes)
 
-    families = aggregate_control_data(rendered_components)
-
-    write_files(families, out_dir, config)
-    hashes.write_changes()
-    print(f"Detected changes in {hashes.changed_files} files.")
-
-
-if __name__ == "__main__":
-    main()
+    if hashes.changed_files:
+        write_files(families, out_dir, config)
+        hashes.write_changes()
