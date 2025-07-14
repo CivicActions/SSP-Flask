@@ -11,7 +11,7 @@ from typing import List, Optional
 import markdown
 from flask import current_app, flash, url_for
 from loguru import logger
-from ruamel.yaml import YAML
+from ruamel.yaml import YAML, YAMLError
 
 
 def file_to_html(path: Path | str) -> str:
@@ -75,8 +75,13 @@ def load_yaml_files(file_path: str | Path) -> dict:
     try:
         with open(load_file, "r") as fp:
             yaml = YAML(typ="safe", pure=True)
-            project = yaml.load(fp)
-            return project
+            try:
+                project = yaml.load(fp)
+                return project
+            except YAMLError as e:
+                logger.error(f"YAML error in {load_file.name}: {e}")
+                flash(f"YAML error in {load_file.name}: {e}", "error")
+                return {}
     except FileNotFoundError:
         logger.error(f"No {load_file.name} found in {load_file.parent.as_posix()}.")
         flash(f"No {load_file.name} found in {load_file.parent.as_posix()}.", "error")
