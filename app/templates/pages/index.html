@@ -35,7 +35,7 @@
                 </ul>
             </article>
             <article>
-                <h4>Components</h4>
+                <h4>Certifications</h4>
                 <ul>
                 {% for certification in project.certifications %}
                     {% set parts = certification.split("/") %}
@@ -51,6 +51,7 @@
                 <ul>
                     <li><a href="{{ url_for('routes.toolkit_make_families') }}">Create Family files</a></li>
                     <li><a href="{{ url_for('routes.toolkit_make_ssp') }}">Create SSP</a></li>
+                    <li><a href="{{ url_for('routes.toolkit_make_sops') }}">Create SOPs</a></li>
                 </ul>
             </article>
             <article>

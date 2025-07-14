@@ -13,6 +13,7 @@ from app.ssp_tools.createfiles import create_files
 from app.ssp_tools.exportto import export_to
 from app.ssp_tools.make_families import make_families
 from app.ssp_tools.make_ssp import make_ssp
+from app.ssp_tools.sop import make_sops
 
 
 @bp.route("/createfiles", defaults={"subpath": ""}, methods=["GET"])
@@ -42,4 +43,11 @@ def toolkit_make_families():
 def toolkit_make_ssp():
     ssp_root: Path = get_ssp_root()
     make_ssp(ssp_root=ssp_root)
+    return redirect(request.referrer or "/")
+
+
+@bp.route("/makesops", methods=["GET"])
+def toolkit_make_sops():
+    ssp_root: Path = get_ssp_root()
+    make_sops(ssp_root=ssp_root)
     return redirect(request.referrer or "/")

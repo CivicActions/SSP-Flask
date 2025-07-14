@@ -3,6 +3,7 @@ Copyright 2019-2025 CivicActions, Inc. See the README file at the top-level
 directory of this distribution and at https://github.com/CivicActions/ssp-flask#license.
 """
 
+import hashlib
 import json
 from functools import lru_cache
 from pathlib import Path
@@ -11,7 +12,7 @@ from typing import List, Optional
 import markdown
 from flask import current_app, flash, url_for
 from loguru import logger
-from ruamel.yaml import YAML
+from ruamel.yaml import YAML, YAMLError
 
 
 def file_to_html(path: Path | str) -> str:
@@ -75,8 +76,13 @@ def load_yaml_files(file_path: str | Path) -> dict:
     try:
         with open(load_file, "r") as fp:
             yaml = YAML(typ="safe", pure=True)
-            project = yaml.load(fp)
-            return project
+            try:
+                project = yaml.load(fp)
+                return project
+            except YAMLError as e:
+                logger.error(f"YAML error in {load_file.name}: {e}")
+                flash(f"YAML error in {load_file.name}: {e}", "error")
+                return {}
     except FileNotFoundError:
         logger.error(f"No {load_file.name} found in {load_file.parent.as_posix()}.")
         flash(f"No {load_file.name} found in {load_file.parent.as_posix()}.", "error")
@@ -144,3 +150,15 @@ def create_breadcrumbs(
                 }
             )
     return breadcrumbs
+
+
+def get_hash(path: str) -> str:
+    BUF_SIZE = 65536
+    sha_hash = hashlib.sha256()
+    with open(Path(path), "rb") as f:
+        while True:
+            file = f.read(BUF_SIZE)
+            if not file:
+                break
+            sha_hash.update(file)
+    return sha_hash.hexdigest()
