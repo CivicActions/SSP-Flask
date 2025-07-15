@@ -14,11 +14,6 @@
         <h3>Editing: {{ filename }}</h3>
     </article>
     <section>
-        <a
-            class="outline wide"
-            href="{{ url_for('routes.toolkit_render_files', subpath=filename) }}"
-            role="button"
-        >Render file</a>
         <textarea id="yamlEditor">{{ content }}</textarea>
         <button id="saveButton" type="submit">Save</button>
     </section>

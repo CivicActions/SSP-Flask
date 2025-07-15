@@ -20,7 +20,12 @@
                         <a href="{{ url_for('routes.rendered_path_view', subpath=dir) }}">{{ parts | last }}</a>
                     </td>
                     <td>
-                        <a href="{{ url_for('routes.toolkit_render_files', subpath=dir) }}">Render</a>
+                        <a href="{{
+                            url_for(
+                                'routes.toolkit_render_files',
+                                subpath=dir | replace("rendered", "templates")
+                            )
+                        }}">Re-render</a>
                     </td>
                 </tr>
             {% endfor %}
@@ -44,7 +49,28 @@
                         <a href="{{ url_for('routes.rendered_path_view', subpath=file) }}">{{ parts | last }}</a>
                     </td>
                     <td>
-                        <a href="{{ url_for('routes.toolkit_render_files', subpath=file) }}">Render</a>
+                    {% if file.endswith(".yaml") %}
+                        <a href="{{
+                            url_for(
+                                'routes.template_edit_file',
+                                subpath=file | replace("rendered", "templates")
+                            )
+                        }}">Edit</a>
+                    {% else %}
+                        <a href="{{
+                            url_for(
+                                'routes.template_edit_file',
+                                subpath=file | replace('rendered', 'templates') + ".j2"
+                            )
+                        }}">Edit</a>
+                    {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{
+                            url_for('routes.toolkit_render_files',
+                                subpath=file | replace('rendered', 'templates')
+                            )
+                        }}">Re-render</a>
                     </td>
                     <td>
                         <a href="{{ url_for('routes.toolkit_export_files', subpath=file) }}">Export</a>
