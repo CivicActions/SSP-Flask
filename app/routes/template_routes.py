@@ -16,6 +16,7 @@ from app.helpers.helpers import (
     list_files,
 )
 from app.routes import bp
+from app.ssp_tools.createfiles import create_files
 from app.ssp_tools.helpers.toolkitconfig import ToolkitConfig
 
 
@@ -104,6 +105,7 @@ def template_save_file():
     file_path: Path = ssp_base.joinpath(filename)
     with open(file_path, "w") as f:
         f.write(content)
+    create_files(to_render=file_path.as_posix())
 
     flash("File saved successfully", "status")
     return redirect(request.referrer or "/")

@@ -7,9 +7,23 @@
     <section>
         <a
             class="outline wide"
-            href="{{ url_for('routes.toolkit_render_files', subpath=file_path) }}"
+            {% if file_path.endswith(".yaml") %}
+            href="{{
+                url_for(
+                    'routes.template_edit_file',
+                    subpath=file_path
+                )
+            }}"
+            {% else %}
+            href="{{
+                url_for(
+                    'routes.template_edit_file',
+                    subpath=file_path + ".j2"
+                )
+            }}"
+            {% endif %}
             role="button"
-        >Render file</a>
+        >Edit file</a>
     </section>
     <section>
         {{ content | safe }}
